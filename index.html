@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toto Aluminium Manufacture</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+        .sidebar-item.active { background-color: #4A5568; color: white; }
+        .submenu-item.active { background-color: #2D3748; color:white; }
+        .debounce-indicator { transition: opacity 0.3s ease-in-out; }
+        .modal { transition: opacity 0.25s ease; }
+        .modal-content { transition: transform 0.25s ease; }
+        .hidden { display: none !important; }
+
+        @media print {
+            body * { visibility: hidden; }
+            .print-area, .print-area * { visibility: visible; }
+            .print-area { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print, .no-print * { visibility: hidden !important; }
+            #view-quotation-modal {
+                position: absolute !important; top: 0 !important; left: 0 !important;
+                width: 100% !important; height: 100% !important;
+                padding: 0 !important; margin: 0 !important;
+                display: block !important; background: white !important;
+                overflow: visible !important;
+            }
+            #view-quotation-modal .modal-content {
+                box-shadow: none !important; border: none !important;
+                transform: none !important; padding: 0 !important;
+                margin: 0 !important; width: 100% !important;
+                max-width: 100% !important;
+            }
+
+            /* Tambahkan ini di dalam @media print */
+
+@page {
+    /* Ukuran kertas half A4 (A5). Sesuaikan jika perlu. */
+    size: A5 portrait; 
+    /* Margin cetak */
+    margin: 1cm;
+}
+
+#sj-print-area {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 10pt !important;
+    color: #000 !important;
+}
+#sj-print-area h1, #sj-print-area h2, #sj-print-area p, #sj-print-area th, #sj-print-area td {
+    font-family: 'Courier New', Courier, monospace !important;
+    font-size: 10pt !important;
+    color: #000 !important;
+    background: none !important;
+}
+#sj-print-area table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#sj-print-area th, #sj-print-area td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: left;
+}
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+    <div id="login-page" class="flex items-center justify-center min-h-screen bg-gray-200 no-print">
+        <div class="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
+            <div class="text-center">
+                <div class="flex justify-center mb-4"><div class="bg-blue-600 text-white p-3 rounded-lg text-2xl font-bold">TAM MANAGE V55</div></div>
+                <h2 class="text-2xl font-bold text-gray-900">Masuk ke Akun Anda</h2>
+                <p class="mt-2 text-sm text-gray-600">Selamat datang di Toto Aluminium</p>
+            </div>
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label for="username" class="text-sm font-medium text-gray-700">Username</label>
+                    <input id="username" name="username" type="text" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="">
+                </div>
+                <div>
+                    <label for="password" class="text-sm font-medium text-gray-700">Password</label>
+                    <input id="password" name="password" type="password" required class="w-full px-3 py-2 mt-1 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" value="">
+                </div>
+                <p id="login-error" class="text-sm text-red-600 text-center hidden">Username atau password salah!</p>
+                <div>
+                    <button type="submit" class="w-full px-4 py-2 font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex justify-center items-center">
+                        <span id="login-button-text">Masuk</span>
+                        <svg id="login-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </button>
+                </div>
+            </form>
+            <p class="text-sm text-center text-gray-500">Belum punya akun? <a href="#" class="font-medium text-blue-600 hover:underline">Daftar</a></p>
+        </div>
+    </div>
+
+    <div id="main-app" class="hidden h-screen flex">
+        <div class="w-64 bg-gray-900 text-white flex flex-col no-print">
+            <div class="px-6 py-4 flex items-center space-x-3 border-b border-gray-700">
+                <div class="bg-blue-600 text-white p-3 rounded-lg text-xl font-bold">T</div>
+                <h1 class="text-xl font-semibold">Toto Aluminum</h1>
+            </div>
+            <nav id="sidebar-nav" class="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+                <a href="#" data-page="dashboard" class="sidebar-item active flex items-center px-4 py-2 rounded-md hover:bg-gray-700"><i data-lucide="layout-dashboard" class="h-5 w-5 mr-3"></i> Dashboard</a>
+                <div class="collapsible">
+                    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+                        <span class="flex items-center"><i data-lucide="wrench" class="h-5 w-5 mr-3"></i> Manufaktur</span>
+                        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+                    </a>
+                    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+                        <a href="#" data-page="manufaktur-wo" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Work Order (WO)</a>
+                        <a href="#" data-page="manufaktur-status" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Status Barang</a>
+                        <a href="#" data-page="manufaktur-print" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Print PO</a>
+                    </div>
+                </div>
+                <div class="collapsible">
+                    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+                        <span class="flex items-center"><i data-lucide="file-text" class="h-5 w-5 mr-3"></i> Administrasi</span>
+                        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+                    </a>
+                    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+                        <a href="#" data-page="admin-quotation" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Quotation</a>
+                        <a href="#" data-page="admin-invoice" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Invoice</a>
+                        <a href="#" data-page="admin-laporan" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Laporan Keuangan</a>
+                    </div>
+                    <div class="collapsible">
+    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+        <span class="flex items-center"><i data-lucide="package" class="h-5 w-5 mr-3"></i> Barang</span>
+        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+    </a>
+    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+        <a href="#" data-page="barang-stok" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Stok Bahan</a>
+        <a href="#" data-page="barang-suratjalan" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Surat Jalan</a>
+    </div>
+    
+    <div class="collapsible">
+    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+        <span class="flex items-center"><i data-lucide="users" class="h-5 w-5 mr-3"></i> Karyawan</span>
+        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+    </a>
+    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+        <a href="#" data-page="karyawan-data" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Data Karyawan</a>
+        <a href="#" data-page="karyawan-payroll" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Payroll / Gaji</a>
+    </div>
+</div>
+            </nav>
+            <div class="px-4 py-4 border-t border-gray-700">
+                <a href="#" id="logout-button" class="flex items-center w-full px-4 py-2 rounded-md hover:bg-gray-700"><i data-lucide="log-out" class="h-5 w-5 mr-3"></i> Logout</a>
+            </div>
+        </div>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white shadow-sm p-4 flex justify-between items-center no-print">
+                <h2 id="page-title" class="text-xl font-semibold text-gray-800">Dashboard</h2>
+                <div class="flex items-center space-x-4">
+                    <span id="user-display" class="text-gray-600"></span>
+                    <div id="user-avatar" class="h-10 w-10 bg-blue-600 text-white flex items-center justify-center rounded-full font-bold"></div>
+                </div>
+            </header>
+            <main class="flex-1 flex flex-col overflow-hidden bg-gray-100" id="page-content-wrapper">
+                <div id="dashboard-content" class="page p-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-semibold text-gray-700">Selamat Datang!</h3>
+                        <p class="text-gray-500 mt-2">Anda telah berhasil masuk ke sistem manajemen Toto Aluminium.</p>
+                    </div>
+                </div>
+                <div id="manufaktur-wo-content" class="page hidden h-full flex flex-col"></div>
+                <div id="manufaktur-status-content" class="page hidden h-full flex flex-col"></div>
+                <div id="manufaktur-print-content" class="page hidden p-6 bg-white rounded-lg shadow"></div>
+                <div id="admin-quotation-content" class="page hidden h-full flex flex-col"></div>
+                <div id="admin-invoice-content" class="page hidden h-full flex flex-col"></div>
+                <div id="admin-laporan-content" class="page hidden h-full flex flex-col"></div>
+                <div id="barang-stok-content" class="page hidden h-full flex flex-col"></div>
+                <div id="barang-suratjalan-content" class="page hidden h-full flex flex-col"></div>
+                <div id="karyawan-data-content" class="page hidden h-full flex flex-col"></div>
+<div id="karyawan-payroll-content" class="page hidden h-full flex flex-col"></div>
+            </main>
+        </div>
+    </div>
+
+    <div id="new-bahan-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none no-print">
+    <div class="modal-content relative mx-auto p-6 border w-full max-w-lg shadow-lg rounded-md bg-white transform -translate-y-10">
+        <h3 class="text-xl font-semibold text-gray-900 mb-6">Tambah Bahan Baku Baru</h3>
+        <form id="new-bahan-form" class="space-y-4">
+            <div>
+                <label for="bahan-kode" class="block text-sm font-medium text-gray-700">Kode Bahan (Unik)</label>
+                <input type="text" id="bahan-kode" required placeholder="Contoh: ALU-01" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm uppercase">
+            </div>
+            <div>
+                <label for="bahan-nama" class="block text-sm font-medium text-gray-700">Nama Bahan</label>
+                <input type="text" id="bahan-nama" required placeholder="Contoh: Aluminium Batang Coklat 6m" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="bahan-satuan" class="block text-sm font-medium text-gray-700">Satuan</label>
+                    <input type="text" id="bahan-satuan" required placeholder="Batang, Pcs, Kg" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                 <div>
+                    <label for="bahan-kategori" class="block text-sm font-medium text-gray-700">Kategori</label>
+                    <input type="text" id="bahan-kategori" placeholder="Aluminium, Aksesoris" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+             <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label for="bahan-stok" class="block text-sm font-medium text-gray-700">Stok Awal</label>
+                    <input type="number" id="bahan-stok" required value="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+                <div>
+                    <label for="bahan-lokasi" class="block text-sm font-medium text-gray-700">Lokasi</label>
+                    <input type="text" id="bahan-lokasi" placeholder="Rak A1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancel-new-bahan-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button type="submit" id="save-new-bahan-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan Bahan</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="update-stok-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none no-print">
+    <div class="modal-content relative mx-auto p-6 border w-full max-w-md shadow-lg rounded-md bg-white transform -translate-y-10">
+        <h3 id="update-stok-title" class="text-xl font-semibold text-gray-900 mb-4">Update Stok</h3>
+        <p class="text-sm mb-1">Nama Bahan:</p>
+        <p id="update-stok-nama-bahan" class="font-bold text-lg mb-4 p-3 bg-gray-100 rounded-md"></p>
+        <form id="update-stok-form" class="space-y-4">
+            <div>
+                <label for="update-stok-jumlah" class="block text-sm font-medium text-gray-700">Jumlah</label>
+                <input type="number" id="update-stok-jumlah" required step="any" placeholder="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="update-stok-keterangan" class="block text-sm font-medium text-gray-700">Keterangan (Opsional)</label>
+                <input type="text" id="update-stok-keterangan" placeholder="Contoh: Dari Supplier X" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancel-update-stok-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button type="submit" id="save-update-stok-btn" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <div id="karyawan-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none no-print">
+    <div class="modal-content relative mx-auto p-6 border w-full max-w-lg shadow-lg rounded-md bg-white transform -translate-y-10">
+        <h3 id="karyawan-modal-title" class="text-xl font-semibold text-gray-900 mb-6">Tambah Karyawan Baru</h3>
+        <form id="karyawan-form" class="space-y-4">
+            <input type="hidden" id="karyawan-row-number">
+            <div>
+                <label for="karyawan-nama" class="block text-sm font-medium text-gray-700">Nama Karyawan</label>
+                <input type="text" id="karyawan-nama" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="karyawan-gaji" class="block text-sm font-medium text-gray-700">Gaji Harian (Rp)</label>
+                <input type="number" id="karyawan-gaji" required value="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+             <div>
+                <label for="karyawan-kasbon" class="block text-sm font-medium text-gray-700">Total Kasbon (Rp)</label>
+                <input type="number" id="karyawan-kasbon" value="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="karyawan-bpjs" class="block text-sm font-medium text-gray-700">Potongan BPJS (Rp)</label>
+                <input type="number" id="karyawan-bpjs" value="0" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancel-karyawan-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button type="submit" id="save-karyawan-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan</button>
+            </div>
+        </form>
+    </div>
+</div>
+    <div id="quotation-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none no-print"></div>
+    <div id="view-quotation-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none"></div>
+    <div id="confirmation-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 no-print"></div>
+    <div id="financial-record-modal" class="modal fixed inset-0 bg-gray-600 bg-opacity-50 h-full w-full flex items-center justify-center hidden z-50 opacity-0 pointer-events-none no-print">
+    <div class="modal-content relative mx-auto p-6 border w-full max-w-lg shadow-lg rounded-md bg-white transform -translate-y-10">
+        <h3 id="financial-modal-title" class="text-xl font-semibold text-gray-900 mb-6">Catat Transaksi Baru</h3>
+        <form id="financial-form" class="space-y-4">
+            <div>
+                <label for="fin-tanggal" class="block text-sm font-medium text-gray-700">Tanggal</label>
+                <input type="date" id="fin-tanggal" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Tipe Transaksi</label>
+                <div class="mt-2 flex gap-4">
+                    <label class="inline-flex items-center"><input type="radio" name="fin-tipe" value="Uang Masuk" class="form-radio" checked> <span class="ml-2">Uang Masuk</span></label>
+                    <label class="inline-flex items-center"><input type="radio" name="fin-tipe" value="Uang Keluar" class="form-radio"> <span class="ml-2">Uang Keluar</span></label>
+                </div>
+            </div>
+            <div>
+                <label for="fin-deskripsi" class="block text-sm font-medium text-gray-700">Deskripsi</label>
+                <input type="text" id="fin-deskripsi" required placeholder="Contoh: Pembayaran Invoice 10578" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="fin-jumlah" class="block text-sm font-medium text-gray-700">Jumlah (Rp)</label>
+                <input type="number" id="fin-jumlah" required placeholder="Contoh: 500000" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label for="fin-sumber" class="block text-sm font-medium text-gray-700">Sumber / Kantong</label>
+                <select id="fin-sumber" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option>Bank BCA TOTO</option>
+                    <option>Bank BCA Yanto</option>
+                    <option>Cash</option>
+                </select>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" id="cancel-fin-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                <button type="submit" id="save-fin-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan Transaksi</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+    <script>
+    const App = {
+        state: { user: null, currentPage: 'dashboard', isEditing: false },
+        elements: {},
+
+        api: {
+            run(fn, ...args) {
+                return new Promise((resolve, reject) => {
+                    google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args);
+                });
+            },
+            checkLogin(u, p) { return this.run('checkLogin', u, p); },
+            getWorkOrders(m, y) { return this.run('getWorkOrders', m, y); },
+            addWorkOrder(d) { return this.run('addWorkOrder', d); },
+            updateWorkOrder(r, d) { return this.run('updateWorkOrder', r, d); },
+            deleteWorkOrder(r) { return this.run('deleteWorkOrder', r); },
+            updateOrderStatus(r, c, v) { return this.run('updateOrderStatus', r, c, v); },
+            getQuotations() { return this.run('getQuotations'); },
+            getQuotationByRow(r) { return this.run('getQuotationByRow', r); },
+            addQuotation(d) { return this.run('addQuotation', d); },
+            updateQuotation(r, d) { return this.run('updateQuotation', r, d); },
+            deleteQuotation(r) { return this.run('deleteQuotation', r); },
+            getInvoiceData(inv) { return this.run('getInvoiceData', inv); },
+            getFinancialData(m, y) { return this.run('getFinancialData', m, y); },
+            addFinancialRecord(d) { return this.run('addFinancialRecord', d); },
+            getStokBahan() { return this.run('getStokBahan'); },
+    addNewBahan(d) { return this.run('addNewBahan', d); },
+    updateStok(d) { return this.run('updateStok', d); },
+    logSuratJalan(d) { return this.run('logSuratJalan', d); },
+    getItemsForColoring() { return this.run('getItemsForColoring'); },
+    createSuratJalanWarna(d) { return this.run('createSuratJalanWarna', d); },
+    getAllKaryawanData() { return this.run('getAllKaryawanData'); },
+    addNewKaryawan(d) { return this.run('addNewKaryawan', d); },
+    updateKaryawanData(d) { return this.run('updateKaryawanData', d); },
+    toggleKaryawanStatus(rowNum, status) { return this.run('toggleKaryawanStatus', rowNum, status); },
+    getActiveKaryawanList() { return this.run('getActiveKaryawanList'); },
+    processPayroll(d) { return this.run('processPayroll', d); },
+    getSlipGajiHtml() { return this.run('getSlipGajiHtml'); }, // API call for slip gaji template
+        },
+
+        ui: {
+            showPage(pageId) {
+                document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.id !== `${pageId}-content`));
+                const link = App.elements.sidebarNav.querySelector(`[data-page="${pageId}"]`);
+                if (link) {
+                    App.elements.pageTitle.textContent = link.textContent.trim();
+                    App.elements.sidebarNav.querySelectorAll('.active').forEach(el => el.classList.remove('active'));
+                    link.classList.add('active');
+                    const parentMenu = link.closest('.collapsible')?.querySelector('.sidebar-item');
+                    if (parentMenu) parentMenu.classList.add('active');
+                }
+                App.state.currentPage = pageId;
+            },
+            setLoading(btn, isLoading) {
+                const text = btn.querySelector('span');
+                const spinner = btn.querySelector('svg');
+                if (text) text.classList.toggle('hidden', isLoading);
+                if (spinner) spinner.classList.toggle('hidden', !isLoading);
+                btn.disabled = isLoading;
+            },
+            formatCurrency(num) {
+                return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(isNaN(num) ? 0 : num);
+            },
+            toggleModal(modalElement, show) {
+                if (show) {
+                    modalElement.classList.remove('hidden');
+                    setTimeout(() => {
+                        modalElement.classList.remove('opacity-0', 'pointer-events-none');
+                        modalElement.querySelector('.modal-content')?.classList.remove('-translate-y-10');
+                    }, 20);
+                } else {
+                    modalElement.classList.add('opacity-0', 'pointer-events-none');
+                    modalElement.querySelector('.modal-content')?.classList.add('-translate-y-10');
+                    setTimeout(() => {
+                        modalElement.classList.add('hidden');
+                    }, 250);
+                }
+            },
+            populateDateFilters(monthElement, yearElement) {
+                const months = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                const currentYear = new Date().getFullYear();
+                const currentMonth = new Date().getMonth() + 1;
+                if(monthElement) monthElement.innerHTML = '';
+                if(yearElement) yearElement.innerHTML = '';
+                
+                months.forEach((m, i) => {
+                    const opt = new Option(m, i + 1);
+                    if ((i + 1) === currentMonth) opt.selected = true;
+                    if(monthElement) monthElement.add(opt);
+                });
+                for (let y = currentYear + 1; y >= 2020; y--) {
+                    const opt = new Option(y, y);
+                    if (y === currentYear) opt.selected = true;
+                    if(yearElement) yearElement.add(opt);
+                }
+            }
+        },
+        
+        pages: {
+            dashboard: {
+                load() { App.ui.showPage('dashboard'); }
+            },
+
+
+
+
+
+barang_suratjalan: {
+    state: {
+        invoiceData: null,
+        itemsForColoring: []
+    },
+    elements: {},
+    init() {
+        const content = document.getElementById('barang-suratjalan-content');
+        content.innerHTML = `
+            <div class="p-4 bg-white border-b border-gray-200 no-print">
+                <div class="flex border-b">
+                    <button id="tab-sj-customer" class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600">Untuk Customer</button>
+                    <button id="tab-sj-warna" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Untuk Pewarnaan</button>
+                </div>
+            </div>
+
+            <div id="content-sj-customer" class="h-full flex flex-col">
+                <div class="p-4 bg-white no-print">
+                     <h3 class="text-xl font-semibold text-gray-800">Surat Jalan Customer</h3>
+                    <div class="mt-4 p-4 border rounded-md space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                            <div>
+                                <label for="sj-invoice-search" class="block text-sm font-medium text-gray-700">Cari Nomor Invoice</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="number" id="sj-invoice-search" placeholder="Ketik nomor invoice..." class="w-full p-2 border border-gray-300 rounded-md">
+                                    <button id="sj-search-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"><i data-lucide="search"></i></button>
+                                </div>
+                            </div>
+                            <div><button id="sj-print-btn" class="w-full inline-flex items-center justify-center px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 disabled:bg-gray-400" disabled><i data-lucide="printer" class="mr-2"></i> CETAK SURAT JALAN</button></div>
+                        </div>
+                         <div>
+                            <label for="sj-catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
+                            <input type="text" id="sj-catatan" placeholder="Contoh: Pengiriman via ekspedisi X" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                </div>
+                <div id="sj-print-preview" class="hidden flex-1 overflow-y-auto min-h-0 p-4 bg-gray-200">
+                    <div id="sj-print-area" class="print-area bg-white p-6 shadow-lg max-w-3xl mx-auto"></div>
+                </div>
+            </div>
+
+            <div id="content-sj-warna" class="hidden h-full flex flex-col">
+                <div class="p-4 bg-white no-print border-b">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Surat Jalan Pewarnaan</h3>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label for="sj-warna-vendor" class="block text-sm font-medium text-gray-700">Pilih Vendor Pewarnaan</label>
+                            <select id="sj-warna-vendor" class="mt-1 border-gray-300 rounded-md shadow-sm">
+                                <option>PT. TEGAR LESTARI</option>
+                                <option>PT. INDOKARYA</option>
+                                <option>PT. PERAK COATING</option>
+                                <option>PT. COATINDO</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="sj-warna-refresh" title="Muat Ulang Daftar" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"><i data-lucide="refresh-cw" class="h-4 w-4"></i></button>
+                            <button id="sj-warna-print-btn" class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700"><i data-lucide="printer" class="mr-2"></i> Buat & Cetak SJ Warna</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto min-h-0">
+                    <table class="min-w-full divide-y divide-gray-200 bg-white">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="p-4 sticky top-0 bg-gray-800 z-10"><input type="checkbox" id="sj-warna-select-all"></th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Tanggal WO</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Deskripsi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sj-warna-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div id="sj-warna-print-preview" class="hidden absolute inset-0 bg-gray-200 p-4 overflow-y-auto">
+                    <div id="sj-warna-print-area" class="print-area bg-white p-6 shadow-lg max-w-3xl mx-auto"></div>
+                    <div class="mt-6 text-center no-print">
+                        <button id="sj-warna-close-preview" class="px-4 py-2 bg-gray-500 text-white rounded-md">Tutup Preview</button>
+                    </div>
+                </div>
+            </div>`;
+        
+        this.elements = {
+            content,
+            tabCustomer: content.querySelector('#tab-sj-customer'),
+            tabWarna: content.querySelector('#tab-sj-warna'),
+            contentCustomer: content.querySelector('#content-sj-customer'),
+            contentWarna: content.querySelector('#content-sj-warna'),
+            invoiceInput: content.querySelector('#sj-invoice-search'),
+            searchBtn: content.querySelector('#sj-search-btn'),
+            catatanInput: content.querySelector('#sj-catatan'),
+            printPreview: content.querySelector('#sj-print-preview'),
+            printArea: content.querySelector('#sj-print-area'),
+            printBtn: content.querySelector('#sj-print-btn'),
+            vendorSelect: content.querySelector('#sj-warna-vendor'),
+            warnaRefreshBtn: content.querySelector('#sj-warna-refresh'),
+            warnaPrintBtn: content.querySelector('#sj-warna-print-btn'),
+            warnaTableBody: content.querySelector('#sj-warna-table-body'),
+            warnaSelectAll: content.querySelector('#sj-warna-select-all'),
+            warnaPrintPreview: content.querySelector('#sj-warna-print-preview'),
+            warnaPrintArea: content.querySelector('#sj-warna-print-area'),
+            warnaClosePreviewBtn: content.querySelector('#sj-warna-close-preview'),
+        };
+        this._setupEventListeners();
+        lucide.createIcons();
+    },
+
+    _setupEventListeners() {
+        this.elements.tabCustomer.addEventListener('click', () => this._switchTab('customer'));
+        this.elements.tabWarna.addEventListener('click', () => this._switchTab('warna'));
+        this.elements.searchBtn.addEventListener('click', () => this._handleSearchInvoice());
+        this.elements.printBtn.addEventListener('click', () => this._handlePrintCustomer());
+        this.elements.warnaRefreshBtn.addEventListener('click', () => this._loadItemsForColoring());
+        this.elements.warnaPrintBtn.addEventListener('click', () => this._handleCreateSJWarna());
+        this.elements.warnaClosePreviewBtn.addEventListener('click', () => {
+            this.elements.warnaPrintPreview.classList.add('hidden');
+            this._loadItemsForColoring(); // Otomatis refresh list setelah cetak
+        });
+        this.elements.warnaSelectAll.addEventListener('change', (e) => {
+            this.elements.warnaTableBody.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = e.target.checked);
+        });
+    },
+
+    load() {
+        App.ui.showPage('barang-suratjalan');
+        this._switchTab('customer'); 
+        this.elements.printPreview.classList.add('hidden');
+        this.elements.printBtn.disabled = true;
+        this.elements.invoiceInput.value = '';
+        this.elements.catatanInput.value = '';
+    },
+
+    _switchTab(tabName) {
+        const isCustomer = tabName === 'customer';
+        this.elements.contentCustomer.classList.toggle('hidden', !isCustomer);
+        this.elements.contentWarna.classList.toggle('hidden', isCustomer);
+        this.elements.tabCustomer.classList.toggle('border-blue-600', isCustomer);
+        this.elements.tabCustomer.classList.toggle('text-blue-600', isCustomer);
+        this.elements.tabCustomer.classList.toggle('text-gray-500', !isCustomer);
+        this.elements.tabWarna.classList.toggle('border-blue-600', !isCustomer);
+        this.elements.tabWarna.classList.toggle('text-blue-600', !isCustomer);
+        this.elements.tabWarna.classList.toggle('text-gray-500', isCustomer);
+
+        if (!isCustomer) {
+            this._loadItemsForColoring();
+        }
+    },
+
+    // --- FUNGSI-FUNGSI UNTUK SJ PEWARNAAN ---
+    async _loadItemsForColoring() {
+        this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6">Memuat barang siap warna...</td></tr>`;
+        try {
+            const data = await App.api.getItemsForColoring();
+            this.state.itemsForColoring = data;
+            if (data.length === 0) {
+                this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6">Tidak ada barang yang siap untuk diwarnai.</td></tr>`;
+                return;
+            }
+            this.elements.warnaTableBody.innerHTML = data.map(item => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4"><input type="checkbox" class="sj-warna-item" value="${item.rowNumber}" data-item='${JSON.stringify(item)}'></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Tanggal}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item['Nama Customer']}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.Deskripsi}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Qty}</td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-red-500">Gagal memuat data: ${e.message}</td></tr>`;
+        }
+    },
+
+    async _handleCreateSJWarna() {
+        const selectedCheckboxes = this.elements.warnaTableBody.querySelectorAll('.sj-warna-item:checked');
+        if (selectedCheckboxes.length === 0) {
+            alert('Pilih minimal satu barang untuk dibuatkan Surat Jalan.'); return;
+        }
+        
+        const vendor = this.elements.vendorSelect.value;
+        const sjData = { vendor, itemRowNumbers: [], items: [] };
+
+        selectedCheckboxes.forEach(cb => {
+            sjData.itemRowNumbers.push(parseInt(cb.value));
+            sjData.items.push(JSON.parse(cb.dataset.item));
+        });
+
+        App.ui.setLoading(this.elements.warnaPrintBtn, true);
+        try {
+            const result = await App.api.createSuratJalanWarna(sjData);
+            if (result.status === 'success') {
+                this._renderSJWarna(result.noSuratJalan, vendor, result.items);
+                this.elements.warnaPrintPreview.classList.remove('hidden');
+                setTimeout(() => window.print(), 100);
+            } else { throw new Error(result.message); }
+        } catch (e) {
+            alert(`Gagal membuat SJ Warna: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.warnaPrintBtn, false);
+        }
+    },
+
+// GANTI FUNGSI LAMA ANDA DENGAN FUNGSI BARU DI BAWAH INI
+
+_renderSJWarna(noSuratJalan, vendor, items) {
+    const tanggal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'});
+    
+    // Di sini kita memproses setiap item untuk mengurangi ukurannya
+    const itemRows = items.map(item => {
+        // Ambil ukuran asli dan ubah menjadi angka
+        const originalUkuran = parseFloat(item.Ukuran) || 0;
+        // Kurangi 0.2
+        const ukuranBaru = originalUkuran - 0.2;
+
+        return `
+            <tr style="border-bottom: 1px solid #eee;">
+                <td style="text-align: center; padding: 6px 4px; vertical-align: top;">${item.Qty}</td>
+                <td style="padding: 6px 4px; vertical-align: top;">${item.Deskripsi}</td>
+                <td style="text-align: center; padding: 6px 4px; vertical-align: top;">
+                    ${ukuranBaru.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                </td>
+            </tr>
+        `;
+    }).join('');
+
+    // Layout baru yang lebih rapi
+    this.elements.warnaPrintArea.innerHTML = `
+        <div style="text-align: center;">
+            <h1 style="font-weight: bold; font-size: 14pt; margin: 0; padding: 0;">SURAT JALAN PEWARNAAN</h1>
+            <p style="margin: 0; padding: 0; font-size: 9pt;">CV. TOTO ALUMINIUM MANUFACTURE</p>
+        </div>
+        <hr style="border: none; border-top: 1px solid black; margin: 12px 0;">
+        
+        <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+            <tbody>
+                <tr>
+                    <td style="padding: 2px; width: 18%; vertical-align: top;">Kepada Yth.</td>
+                    <td style="padding: 2px; width: 47%;">: <b>${vendor}</b></td>
+                    <td style="padding: 2px; width: 15%;">No. SJ</td>
+                    <td style="padding: 2px;">: <b>${noSuratJalan}</b></td>
+                </tr>
+                <tr>
+                    <td style="padding: 2px;">Tanggal</td>
+                    <td style="padding: 2px;">: ${tanggal}</td>
+                    <td></td><td></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <p style="font-size: 10pt; margin-top: 16px; margin-bottom: 8px;">Dengan hormat,<br>Berikut kami kirimkan barang untuk proses pewarnaan:</p>
+        
+        <table style="width: 100%; font-size: 10pt;">
+            <thead>
+                <tr style="border-top: 1px solid black; border-bottom: 1px solid black;">
+                    <th style="width: 10%; text-align: center; padding: 5px 4px;">Qty</th>
+                    <th style="width: 65%; text-align: left; padding: 5px 4px;">Nama Barang</th>
+                    <th style="width: 25%; text-align: center; padding: 5px 4px;">Ukuran (Cut)</th>
+                </tr>
+            </thead>
+            <tbody>${itemRows}</tbody>
+        </table>
+        
+        <br><br><br>
+        
+        <table style="width: 100%; text-align: center; font-size: 10pt;">
+            <tbody>
+                <tr>
+                    <td style="width: 50%;">Penerima,</td>
+                    <td style="width: 50%;">Hormat Kami,</td>
+                </tr>
+                <tr><td style="height: 70px;"></td><td></td></tr>
+                <tr>
+                    <td>(..................)</td>
+                    <td>(..................)</td>
+                </tr>
+            </tbody>
+        </table>`;
+},
+
+    // --- FUNGSI-FUNGSI UNTUK SJ CUSTOMER ---
+    async _handleSearchInvoice() {
+        const invoiceNumber = this.elements.invoiceInput.value;
+        if (!invoiceNumber) { alert('Silakan masukkan nomor invoice.'); return; }
+        App.ui.setLoading(this.elements.searchBtn, true);
+        this.elements.printPreview.classList.add('hidden');
+        this.elements.printBtn.disabled = true;
+        try {
+            const data = await App.api.getInvoiceData(invoiceNumber);
+            if (data && data.length > 0) {
+                this.state.invoiceData = data;
+                this._renderSuratJalan(data, null);
+                this.elements.printPreview.classList.remove('hidden');
+                this.elements.printBtn.disabled = false;
+            } else { alert('Invoice tidak ditemukan.'); }
+        } catch (e) {
+            alert(`Terjadi error: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.searchBtn, false);
+        }
+    },
+    
+    _renderSuratJalan(data, noSuratJalan) {
+        const customerName = data[0]['Nama Customer'];
+        const tanggal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: 'numeric'});
+        const itemRows = data.map(item => `
+            <tr>
+                <td style="text-align: center; padding: 5px 4px;">${item.Qty}</td>
+                <td style="padding: 5px 4px;">${item.Deskripsi}</td>
+                <td style="padding: 5px 4px;">${item.Ukuran}</td>
+            </tr>`).join('');
+        this.elements.printArea.innerHTML = `
+            <div style="text-align: center;">
+                <h1 style="font-weight: bold; font-size: 14pt; margin: 0; padding: 0;">SURAT JALAN</h1>
+                <p style="margin: 0; padding: 0; font-size: 9pt;">CV. TOTO ALUMINIUM MANUFACTURE</p>
+            </div>
+            <hr style="border: none; border-top: 1px solid black; margin: 8px 0;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 1px; width: 20%;">Kepada Yth.</td><td style="padding: 1px; width: 45%;">: ${customerName}</td>
+                        <td style="padding: 1px; width: 15%;">No. SJ</td><td style="padding: 1px;">: <b id="sj-number-placeholder">${noSuratJalan || '...'}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1px;">No. Invoice</td><td style="padding: 1px;">: ${data[0]['NO INV']}</td>
+                        <td style="padding: 1px;">Tanggal</td><td style="padding: 1px;">: ${tanggal}</td>
+                    </tr>
+                </tbody>
+            </table><br>
+            <table style="width: 100%; font-size: 10pt;">
+                <thead><tr style="border-top: 1px solid black; border-bottom: 1px solid black;"><th style="width: 10%; text-align: center; padding: 5px 4px;">Qty</th><th style="width: 60%; text-align: left; padding: 5px 4px;">Nama Barang</th><th style="width: 30%; text-align: left; padding: 5px 4px;">Ukuran</th></tr></thead>
+                <tbody>${itemRows}</tbody>
+            </table><br><br><br>
+            <table style="width: 100%; text-align: center; font-size: 10pt;">
+                <tbody>
+                    <tr><td style="width: 50%;">Penerima,</td><td style="width: 50%;">Hormat Kami,</td></tr>
+                    <tr><td style="height: 60px;"></td><td></td></tr>
+                    <tr><td>(..................)</td><td>(..................)</td></tr>
+                </tbody>
+            </table>`;
+    },
+
+    async _handlePrintCustomer() {
+        if (!this.state.invoiceData) { alert('Data invoice tidak ada.'); return; }
+        const sjData = {
+            noInvoice: this.elements.invoiceInput.value,
+            namaCustomer: this.state.invoiceData[0]['Nama Customer'],
+            items: this.state.invoiceData.map(i => ({deskripsi: i.Deskripsi, qty: i.Qty, ukuran: i.Ukuran})),
+            namaPenerima: this.state.invoiceData[0]['Nama Customer'], 
+            alamatKirim: '', 
+            catatan: this.elements.catatanInput.value
+        };
+
+        App.ui.setLoading(this.elements.printBtn, true);
+        try {
+            const result = await App.api.logSuratJalan(sjData);
+            if (result.status === 'success') {
+                this._renderSuratJalan(this.state.invoiceData, result.noSuratJalan);
+                setTimeout(() => window.print(), 100);
+            } else { throw new Error(result.message); }
+        } catch(e) {
+            alert(`Gagal mencetak: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.printBtn, false);
+        }
+    }
+},
+            
+            manufaktur_wo: {
+                state: { data: [], headers: ["Tanggal", "Nama Customer", "Deskripsi", "Ukuran", "Qty", "Harga", "Total Harga", "NO INV", "PO Status"], selectedForPO: new Set() },
+                elements: {},
+                init() {
+                    const content = document.getElementById('manufaktur-wo-content');
+                    content.innerHTML = `
+                        <div class="p-4 bg-white border-b border-gray-200 no-print">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <h3 class="text-xl font-semibold text-gray-800 whitespace-nowrap">Daftar Work Order</h3>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <label for="wo-date-filter" class="text-sm font-medium">Filter Tgl:</label>
+                                    <input type="date" id="wo-date-filter" class="border-gray-300 rounded-md shadow-sm">
+                                    <span class="text-gray-400">|</span>
+                                    <select id="wo-month-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                                    <select id="wo-year-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                                    <button id="filter-wo-btn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Filter</button>
+                                </div>
+                            </div>
+                            <div class="flex justify-between items-center mt-4">
+                                <button id="add-wo-btn" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"><i data-lucide="plus" class="h-4 w-4 mr-2"></i> Tambah Baris Baru</button>
+                                <button id="create-po-btn" disabled class="inline-flex items-center px-4 py-2 bg-cyan-600 text-white text-sm font-medium rounded-md hover:bg-cyan-700 disabled:bg-gray-400"><i data-lucide="file-check-2" class="h-4 w-4 mr-2"></i> Buat PO (<span id="po-selection-count">0</span>)</button>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto min-h-0">
+                            <div class="overflow-x-auto bg-white">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-800"></thead>
+                                    <tbody class="divide-y divide-gray-200"></tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    this.elements = {
+                        content,
+                        table: content.querySelector('table'),
+                        tableHead: content.querySelector('thead'),
+                        tableBody: content.querySelector('tbody'),
+                        monthFilter: content.querySelector('#wo-month-filter'),
+                        yearFilter: content.querySelector('#wo-year-filter'),
+                        filterBtn: content.querySelector('#filter-wo-btn'),
+                        addBtn: content.querySelector('#add-wo-btn'),
+                        createPOBtn: content.querySelector('#create-po-btn'),
+                        poSelectionCount: content.querySelector('#po-selection-count'),
+                    };
+                    this.elements.filterBtn.addEventListener('click', () => this.load());
+                    this.elements.addBtn.addEventListener('click', () => this.handleAddNew());
+                    this.elements.createPOBtn.addEventListener('click', () => this.handleCreatePO());
+                    this.elements.table.addEventListener('click', e => this.handleTableClick(e));
+                    this.elements.table.addEventListener('change', e => this.handleTableChange(e));
+                    this.elements.table.addEventListener('input', e => this.handleTableInput(e));
+                    App.ui.populateDateFilters(this.elements.monthFilter, this.elements.yearFilter);
+                    lucide.createIcons();
+                },
+                async load() {
+                    App.ui.showPage('manufaktur-wo');
+                    this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length + 2}" class="text-center p-4">Memuat data...</td></tr>`;
+                    try {
+                        const month = this.elements.monthFilter.value;
+                        const year = this.elements.yearFilter.value;
+                        const specificDateValue = document.getElementById('wo-date-filter').value;
+                        const monthlyData = await App.api.getWorkOrders(month, year);
+                        let filteredData = monthlyData;
+                        if (specificDateValue) {
+                            const selectedDate = new Date(specificDateValue);
+                            const selectedDateString = selectedDate.toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: 'numeric'});
+                            filteredData = monthlyData.filter(item => item.Tanggal === selectedDateString);
+                        }
+                        this.state.data = filteredData.sort((a, b) => new Date(b.Tanggal.split('/').reverse().join('-')) - new Date(a.Tanggal.split('/').reverse().join('-')));
+                        this.render();
+                    } catch (err) {
+                        this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length + 2}" class="text-center p-4 text-red-500">Gagal memuat data. Error: ${err.message}</td></tr>`;
+                    }
+                },
+                _createRowHtml(item) {
+                    const isPrinted = item['PO Status'] === 'PRINTED';
+                    let cellsHtml = `
+                        <td class="p-4"><input type="checkbox" class="wo-select-checkbox" data-row-number="${item.rowNumber}" ${isPrinted ? 'disabled' : ''}></td>
+                        <td class="px-2 py-2 whitespace-nowrap text-sm">
+                            <div class="flex items-center gap-1">
+                                <button title="Edit" class="edit-btn p-2 text-blue-600 hover:bg-blue-100 rounded-md" ${isPrinted ? 'disabled' : ''}><i data-lucide="edit-3" class="h-4 w-4 pointer-events-none"></i></button>
+                                <button title="Hapus" class="delete-btn p-2 text-red-600 hover:bg-red-100 rounded-md" ${isPrinted ? 'disabled' : ''}><i data-lucide="trash-2" class="h-4 w-4 pointer-events-none"></i></button>
+                            </div>
+                        </td>`;
+                    this.state.headers.forEach(header => {
+                        let content;
+                        if (header === 'Total Harga') {
+                            const ukuran = parseFloat(item['Ukuran']) || 0;
+                            const qty = parseFloat(item['Qty']) || 0;
+                            const harga = parseFloat(item['Harga']) || 0;
+                            content = App.ui.formatCurrency(ukuran * qty * harga);
+                        } else if (header === 'Harga') {
+                            content = App.ui.formatCurrency(item[header]);
+                        } else if (header === 'PO Status') {
+                            content = isPrinted ? '<i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mx-auto"></i>' : '';
+                        } else {
+                            content = item[header] || '';
+                        }
+                        cellsHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm ${header === 'PO Status' ? 'text-center' : ''} ${isPrinted ? 'text-gray-500' : 'text-gray-700'}">${content}</td>`;
+                    });
+                    return cellsHtml;
+                },
+                render() {
+                    this.elements.tableHead.innerHTML = `<tr>
+                        <th class="p-4 sticky top-0 bg-gray-800 z-10"><input type="checkbox" id="select-all-wo" class="select-all"></th>
+                        <th class="px-2 py-3 text-left text-xs font-medium text-white uppercase w-24 sticky top-0 bg-gray-800 z-10">Aksi</th>
+                        ${this.state.headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}
+                    </tr>`;
+                    if (this.state.data.length === 0) {
+                        this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length + 2}" class="text-center p-4">Tidak ada data.</td></tr>`;
+                        return;
+                    }
+                    this.elements.tableBody.innerHTML = this.state.data.map(item => {
+                        const isPrinted = item['PO Status'] === 'PRINTED';
+                        return `<tr data-row-number="${item.rowNumber}" class="${isPrinted ? 'bg-gray-100' : 'hover:bg-gray-50'}">${this._createRowHtml(item)}</tr>`;
+                    }).join('');
+                    lucide.createIcons();
+                    this.updatePOButton();
+                },
+                handleTableClick(e) {
+                    const deleteBtn = e.target.closest('.delete-btn'); if(deleteBtn) this.handleDelete(deleteBtn);
+                    const saveNewBtn = e.target.closest('.save-new-btn'); if (saveNewBtn) this.handleSaveNew(saveNewBtn);
+                    const cancelNewBtn = e.target.closest('.cancel-new-btn'); if (cancelNewBtn) this.handleCancelNew(cancelNewBtn);
+                    const editBtn = e.target.closest('.edit-btn'); if (editBtn) this.handleEdit(editBtn);
+                    const saveUpdateBtn = e.target.closest('.save-update-btn'); if (saveUpdateBtn) this.handleSaveUpdate(saveUpdateBtn);
+                    const cancelUpdateBtn = e.target.closest('.cancel-update-btn'); if (cancelUpdateBtn) this.handleCancelUpdate(cancelUpdateBtn);
+                },
+                handleTableChange(e) {
+                    if (e.target.classList.contains('wo-select-checkbox')) {
+                        const rowNumber = e.target.dataset.rowNumber;
+                        if (e.target.checked) this.state.selectedForPO.add(rowNumber); else this.state.selectedForPO.delete(rowNumber);
+                        this.updatePOButton();
+                    } else if (e.target.classList.contains('select-all')) {
+                        this.elements.tableBody.querySelectorAll('.wo-select-checkbox:not(:disabled)').forEach(cb => {
+                            cb.checked = e.target.checked;
+                            const rowNumber = cb.dataset.rowNumber;
+                            if (e.target.checked) this.state.selectedForPO.add(rowNumber); else this.state.selectedForPO.delete(rowNumber);
+                        });
+                        this.updatePOButton();
+                    }
+                },
+                handleTableInput(e){ if(e.target.tagName === 'INPUT' && e.target.type === 'number'){ const row = e.target.closest('tr'); this.calculateTotalForRow(row); } },
+                handleAddNew() {
+                    if (App.state.isEditing) { alert('Selesaikan baris yang sedang diedit.'); return; }
+                    App.state.isEditing = true;
+                    const newRow = this.elements.tableBody.insertRow(0); newRow.id = 'new-wo-row'; newRow.className = 'bg-yellow-50';
+                    newRow.innerHTML = `<td></td><td class="px-2 py-2"><div class="flex items-center gap-1"><button title="Simpan" class="save-new-btn p-2 text-green-600 hover:bg-green-100 rounded-md"><i data-lucide="check" class="h-4 w-4 pointer-events-none"></i></button><button title="Batal" class="cancel-new-btn p-2 text-red-600 hover:bg-red-100 rounded-md"><i data-lucide="x" class="h-4 w-4 pointer-events-none"></i></button></div></td>
+                        ${this.state.headers.map(h => {
+                            if (h === 'Total Harga') return `<td class="px-6 py-4 total-harga-cell">${App.ui.formatCurrency(0)}</td>`;
+                            if (h === 'PO Status') return '<td></td>';
+                            const type = h === 'Tanggal' ? 'date' : (h.includes('Harga') || ['Qty', 'Ukuran'].includes(h) ? 'number' : 'text');
+                            return `<td class="px-2 py-1"><input type="${type}" name="${h}" class="w-full p-1 border-gray-300 rounded-md text-sm"></td>`;
+                        }).join('')}`;
+                    lucide.createIcons();
+                },
+                async handleSaveNew(button) {
+                    const row = button.closest('tr'); const data = {};
+                    row.querySelectorAll('input[name]').forEach(input => { data[input.name] = input.value; });
+                    if (!data['Tanggal'] || !data['Nama Customer']) { alert('Tanggal dan Nama Customer wajib diisi.'); return; }
+                    const date = new Date(data.Tanggal); if (!isNaN(date)) { data.Bulan = date.getMonth() + 1; data.Tahun = date.getFullYear(); }
+                    row.style.opacity = '0.5';
+                    try {
+                        const response = await App.api.addWorkOrder(data);
+                        const newItem = response.data;
+                        this.state.data.unshift(newItem); this.render();
+                    } catch(err) {
+                        alert(`Gagal menyimpan: ${err.message}`); row.style.opacity = '1';
+                    } finally { App.state.isEditing = false; }
+                },
+                handleCancelNew(button) { button.closest('tr').remove(); App.state.isEditing = false; },
+                handleDelete(button) {
+                    const row = button.closest('tr'); const rowNumber = row.dataset.rowNumber; const customer = row.cells[3].textContent;
+                    if (confirm(`Yakin ingin menghapus order untuk ${customer}?`)) {
+                        row.style.opacity = '0.5';
+                        App.api.deleteWorkOrder(rowNumber)
+                            .then(() => {
+                                row.remove(); this.state.data = this.state.data.filter(item => item.rowNumber != rowNumber);
+                            })
+                            .catch(err => { alert(`Gagal menghapus: ${err.message}`); row.style.opacity = '1'; });
+                    }
+                },
+                handleEdit(button) {
+                    if (App.state.isEditing) { alert('Selesaikan baris yang sedang diedit.'); return; }
+                    App.state.isEditing = true;
+                    const row = button.closest('tr'); const rowNumber = row.dataset.rowNumber; const itemData = this.state.data.find(d => d.rowNumber == rowNumber);
+                    row.classList.add('editing-row'); row.setAttribute('data-original-html', row.innerHTML);
+                    let cellsHtml = `
+                        <td class="p-4"><input type="checkbox" data-row-number="${rowNumber}" disabled></td>
+                        <td class="px-2 py-2"><div class="flex items-center gap-1"><button title="Simpan" class="save-update-btn p-2 text-green-600 hover:bg-green-100 rounded-md"><i data-lucide="check" class="h-4 w-4 pointer-events-none"></i></button><button title="Batal" class="cancel-update-btn p-2 text-red-600 hover:bg-red-100 rounded-md"><i data-lucide="x" class="h-4 w-4 pointer-events-none"></i></button></div></td>`;
+                    this.state.headers.forEach(header => {
+                        const value = itemData[header] || '';
+                        if (header === 'Total Harga') {
+                            const u = parseFloat(itemData['Ukuran'])||0, q = parseFloat(itemData['Qty'])||0, h = parseFloat(itemData['Harga'])||0;
+                            cellsHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 total-harga-cell">${App.ui.formatCurrency(u*q*h)}</td>`;
+                        } else if (header === 'PO Status') {
+                            cellsHtml += `<td>${itemData['PO Status']==='PRINTED'?'<i data-lucide="check-circle-2" class="h-5 w-5 text-green-500 mx-auto"></i>':''}</td>`;
+                        } else {
+                            let iType = 'text', iVal = value;
+                            if (header==='Tanggal') { iType='date'; const p=String(value).split('/'); if(p.length===3)iVal=`${p[2]}-${p[1]}-${p[0]}`; } 
+                            else if (['Ukuran','Qty','Harga'].includes(header)) { iType='number'; }
+                            cellsHtml += `<td class="px-2 py-1"><input type="${iType}" name="${header}" value="${iVal}" class="w-full p-1 border-gray-300 rounded-md text-sm"></td>`;
+                        }
+                    });
+                    row.innerHTML = cellsHtml; lucide.createIcons();
+                },
+                async handleSaveUpdate(button) {
+                    const row = button.closest('tr'); const rowNumber = row.dataset.rowNumber; const data = {};
+                    row.querySelectorAll('input[name]').forEach(input => { data[input.name] = input.value; });
+                    const date = new Date(data.Tanggal); if (!isNaN(date)) { data.Bulan = date.getMonth() + 1; data.Tahun = date.getFullYear(); }
+                    row.style.opacity = '0.5';
+                    try {
+                        const response = await App.api.updateWorkOrder(rowNumber, data);
+                        const index = this.state.data.findIndex(d => d.rowNumber == rowNumber);
+                        if (index > -1) this.state.data[index] = response.data;
+                        this.render();
+                    } catch (err) { alert(`Gagal memperbarui: ${err.message}`); row.style.opacity = '1';
+                    } finally { App.state.isEditing = false; }
+                },
+                handleCancelUpdate(button) {
+                    const row = button.closest('tr'); const originalHtml = row.getAttribute('data-original-html');
+                    if (originalHtml) {
+                        row.innerHTML = originalHtml; row.classList.remove('editing-row'); row.removeAttribute('data-original-html'); lucide.createIcons();
+                    }
+                    App.state.isEditing = false;
+                },
+                calculateTotalForRow(row) {
+                    const u = parseFloat(row.querySelector('[name="Ukuran"]')?.value)||0, q = parseFloat(row.querySelector('[name="Qty"]')?.value)||0, h = parseFloat(row.querySelector('[name="Harga"]')?.value)||0;
+                    const totalCell = row.querySelector('.total-harga-cell');
+                    if (totalCell) totalCell.textContent = App.ui.formatCurrency(u * q * h);
+                },
+                updatePOButton() {
+                    this.state.selectedForPO.clear();
+                    this.elements.tableBody.querySelectorAll('.wo-select-checkbox:checked').forEach(cb => this.state.selectedForPO.add(cb.dataset.rowNumber));
+                    const count = this.state.selectedForPO.size;
+                    this.elements.poSelectionCount.textContent = count; this.elements.createPOBtn.disabled = count === 0;
+                },
+                handleCreatePO() {
+                    const poData = this.state.data.filter(item => this.state.selectedForPO.has(item.rowNumber.toString()));
+                    sessionStorage.setItem('poData', JSON.stringify(poData)); App.pages.manufaktur_print.load();
+                }
+            },
+            
+            manufaktur_print: {
+                elements: {},
+                init() { this.elements.content = document.getElementById('manufaktur-print-content'); },
+                load() { App.ui.showPage('manufaktur-print'); this.render(); },
+                render() {
+                    const poData = JSON.parse(sessionStorage.getItem('poData'));
+                    if (!poData || poData.length === 0) {
+                        this.elements.content.innerHTML = `<p class="text-gray-600">Pilih item dari halaman Work Order untuk membuat PO.</p>`; return;
+                    }
+                    const poDate = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric'});
+                    this.elements.content.innerHTML = `
+                        <div class="print-area">
+                            <h2 class="text-2xl font-bold mb-4">Purchase Order (${poDate})</h2>
+                            <table class="w-full border-collapse border text-sm">
+                                <thead class="bg-gray-200 font-bold">
+                                    <tr><td class="p-2 border-r">NAMA</td><td class="p-2 border-r">KETERANGAN</td><td class="p-2 border-r text-center">UK</td><td class="p-2 border-r text-center">QTY</td><td class="p-2 text-center">CEKLIS</td></tr>
+                                </thead>
+                                <tbody>
+                                    ${poData.map(item => `
+                                    <tr class="border-b">
+                                        <td class="p-2 border-r">${item['Nama Customer']}</td><td class="p-2 border-r">${item.Deskripsi}</td>
+                                        <td class="p-2 border-r text-center">${item.Ukuran}</td><td class="p-2 border-r text-center">${item.Qty}</td>
+                                        <td class="p-2"></td>
+                                    </tr>`).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-6 flex gap-4 no-print">
+                            <button id="print-po-btn" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"><i data-lucide="printer" class="h-4 w-4 mr-2"></i>Cetak</button>
+                            <button id="finish-po-btn" class="inline-flex items-center px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700"><i data-lucide="check-check" class="h-4 w-4 mr-2"></i>Selesai & Tandai</button>
+                        </div>`;
+                    this.elements.content.querySelector('#print-po-btn').addEventListener('click', () => window.print());
+                    this.elements.content.querySelector('#finish-po-btn').addEventListener('click', () => this.handleFinishPrint());
+                    lucide.createIcons();
+                },
+                async handleFinishPrint() {
+                    const poData = JSON.parse(sessionStorage.getItem('poData'));
+                    if (!poData || poData.length === 0) return;
+                    const button = this.elements.content.querySelector('#finish-po-btn');
+                    button.disabled = true; button.innerHTML = `<i data-lucide="loader-2" class="animate-spin h-4 w-4 mr-2"></i>Menandai...`; lucide.createIcons();
+                    try {
+                        const updatePromises = poData.map(item => App.api.updateOrderStatus(item.rowNumber, 'PO Status', 'PRINTED'));
+                        await Promise.all(updatePromises);
+                        sessionStorage.removeItem('poData'); App.pages.manufaktur_wo.load();
+                    } catch (err) {
+                        alert('Gagal menandai status PO. Silakan coba lagi.');
+                        button.disabled = false; button.innerHTML = `<i data-lucide="check-check" class="h-4 w-4 mr-2"></i>Selesai & Tandai`; lucide.createIcons();
+                    }
+                }
+            },
+            
+            manufaktur_status: {
+                state: { data: [], headers: ["Tanggal", "Customer", "No Inv", "Deskripsi", "Ukuran", "Qty", "Di Produksi", "Di Warna", "Siap Kirim", "Di Kirim", "Pembayaran", "Ekspedisi"] },
+                elements: {},
+                debounceTimer: null,
+                init(){ 
+                    const content = document.getElementById('manufaktur-status-content');
+                    content.innerHTML = `
+                        <div class="p-4 bg-white border-b border-gray-200 no-print">
+                            <h3 class="text-xl font-semibold text-gray-800 mb-4">Lacak Proses Barang</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div><label for="status-customer-filter" class="block text-sm font-medium text-gray-700">Nama Customer</label><input type="text" id="status-customer-filter" placeholder="Ketik nama..." class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
+                                <div><label for="status-month-filter" class="block text-sm font-medium text-gray-700">Bulan</label><select id="status-month-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select></div>
+                                <div><label for="status-year-filter" class="block text-sm font-medium text-gray-700">Tahun</label><select id="status-year-filter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select></div>
+                                <div class="flex items-end"><button id="filter-status-btn" class="w-full px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Filter</button></div>
+                            </div>
+                            <div class="flex justify-end items-center mt-2"><span id="status-update-indicator" class="text-sm text-gray-500 opacity-0 debounce-indicator">Menyimpan perubahan...</span></div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto min-h-0">
+                            <div class="overflow-x-auto bg-white">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-800"></thead>
+                                    <tbody class="divide-y divide-gray-200"></tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    this.elements = {
+                        content, tableHead: content.querySelector('thead'), tableBody: content.querySelector('tbody'),
+                        customerFilter: content.querySelector('#status-customer-filter'), monthFilter: content.querySelector('#status-month-filter'),
+                        yearFilter: content.querySelector('#status-year-filter'), filterBtn: content.querySelector('#filter-status-btn'),
+                        indicator: content.querySelector('#status-update-indicator'),
+                    };
+                    this.elements.filterBtn.addEventListener('click', () => this.load());
+                    this.elements.tableBody.addEventListener('change', e => this.handleTableUpdate(e));
+                    this.elements.tableBody.addEventListener('input', e => this.handleTableUpdate(e));
+                    App.ui.populateDateFilters(this.elements.monthFilter, this.elements.yearFilter);
+                },
+                async load(){ 
+                    App.ui.showPage('manufaktur-status');
+                    this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4">Memuat data...</td></tr>`;
+                    try {
+                        const data = await App.api.getWorkOrders(this.elements.monthFilter.value, this.elements.yearFilter.value);
+                        const customerName = this.elements.customerFilter.value;
+                        const filteredData = customerName ? data.filter(item => item['Nama Customer']?.toLowerCase().includes(customerName.toLowerCase())) : data;
+                        this.state.data = filteredData;
+                        this.render();
+                    } catch (err) { this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4 text-red-500">Gagal memuat data.</td></tr>`; }
+                },
+                render() {
+                    this.elements.tableHead.innerHTML = `<tr>${this.state.headers.map(h => `<th class="px-4 py-3 text-left text-xs font-medium text-white uppercase tracking-wider sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}</tr>`;
+                    if (this.state.data.length === 0) {
+                        this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4">Tidak ada data.</td></tr>`; return;
+                    }
+                    const statusColumns = ["Di Produksi", "Di Warna", "Siap Kirim", "Di Kirim", "Pembayaran"];
+                    this.elements.tableBody.innerHTML = this.state.data.map(item => {
+                        const statusCells = statusColumns.map(col => {
+                            const isChecked = item[col] === true || String(item[col]).toUpperCase() === 'TRUE';
+                            return `<td class="px-4 py-2 text-center"><input type="checkbox" data-column="${col}" ${isChecked ? 'checked' : ''} class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"></td>`;
+                        }).join('');
+                        return `<tr data-row-number="${item.rowNumber}">
+                                <td class="px-4 py-2 text-sm text-gray-700">${item.Tanggal || ''}</td><td class="px-4 py-2 text-sm text-gray-700">${item['Nama Customer'] || ''}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">${item['NO INV'] || ''}</td><td class="px-4 py-2 text-sm text-gray-700">${item.Deskripsi || ''}</td>
+                                <td class="px-4 py-2 text-sm text-gray-700">${item.Ukuran || ''}</td><td class="px-4 py-2 text-sm text-gray-700">${item.Qty || ''}</td>
+                                ${statusCells}
+                                <td class="px-2 py-1"><input type="text" data-column="Ekspedisi" value="${item.Ekspedisi || ''}" class="w-full text-sm p-1 border-gray-300 rounded-md"></td>
+                            </tr>`;
+                    }).join('');
+                },
+                handleTableUpdate(e) {
+                    const target = e.target; if (target.tagName !== 'INPUT' || !target.dataset.column) return;
+                    const row = target.closest('tr'); const rowNumber = row.dataset.rowNumber;
+                    const columnName = target.dataset.column; const value = target.type === 'checkbox' ? target.checked : target.value;
+                    this.debounceUpdate(rowNumber, columnName, value);
+                },
+                debounceUpdate(rowNumber, columnName, value) {
+                    this.elements.indicator.classList.remove('opacity-0'); clearTimeout(this.debounceTimer);
+                    this.debounceTimer = setTimeout(() => {
+                        App.api.updateOrderStatus(rowNumber, columnName, value)
+                            .then(() => this.elements.indicator.classList.add('opacity-0'))
+                            .catch(() => { alert('Gagal menyimpan perubahan.'); this.elements.indicator.classList.add('opacity-0'); });
+                    }, 800);
+                }
+            },
+
+// TAMBAHKAN OBJEK BARU INI DI DALAM App.pages
+
+karyawan_data: {
+    state: { karyawan: [] },
+    elements: {},
+    init() {
+        const content = document.getElementById('karyawan-data-content');
+        content.innerHTML = `
+            <div class="p-4 bg-white border-b border-gray-200 no-print">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-semibold text-gray-800">Data Karyawan</h3>
+                    <button id="add-karyawan-btn" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">
+                        <i data-lucide="plus" class="h-4 w-4 mr-2"></i> Tambah Karyawan
+                    </button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto min-h-0">
+                <div class="overflow-x-auto bg-white">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-800"></thead>
+                        <tbody id="karyawan-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        this.elements = {
+            content,
+            tableHead: content.querySelector('thead'),
+            tableBody: content.querySelector('tbody'),
+            addBtn: content.querySelector('#add-karyawan-btn'),
+            modal: document.getElementById('karyawan-modal'),
+            form: document.getElementById('karyawan-form'),
+            modalTitle: document.getElementById('karyawan-modal-title'),
+            saveBtn: document.getElementById('save-karyawan-btn'),
+            cancelBtn: document.getElementById('cancel-karyawan-btn'),
+        };
+
+        this.elements.addBtn.addEventListener('click', () => this._openModal());
+        this.elements.form.addEventListener('submit', (e) => this._handleSave(e));
+        this.elements.cancelBtn.addEventListener('click', () => App.ui.toggleModal(this.elements.modal, false));
+        this.elements.tableBody.addEventListener('click', (e) => {
+            if (e.target.closest('.edit-karyawan-btn')) {
+                const rowNumber = e.target.closest('tr').dataset.rowNumber;
+                const karyawan = this.state.karyawan.find(k => k.rowNumber == rowNumber);
+                this._openModal(karyawan);
+            }
+            if (e.target.closest('.status-karyawan-btn')) {
+                const rowNumber = e.target.closest('tr').dataset.rowNumber;
+                const status = e.target.closest('.status-karyawan-btn').dataset.status;
+                this._handleToggleStatus(rowNumber, status);
+            }
+        });
+        lucide.createIcons();
+    },
+
+    async load() {
+        App.ui.showPage('karyawan-data');
+        this.elements.tableBody.innerHTML = `<tr><td colspan="8" class="text-center p-6">Memuat data karyawan...</td></tr>`;
+        try {
+            const data = await App.api.getAllKaryawanData();
+            this.state.karyawan = data;
+            this.render();
+        } catch (e) {
+            this.elements.tableBody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-red-500">Gagal memuat data: ${e.message}</td></tr>`;
+        }
+    },
+
+    render() {
+        const headers = ["ID", "Nama", "Status", "Gaji Harian", "Total Kasbon", "Potongan BPJS", "Aksi"];
+        this.elements.tableHead.innerHTML = `<tr>${headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}</tr>`;
+        
+        if (this.state.karyawan.length === 0) {
+            this.elements.tableBody.innerHTML = `<tr><td colspan="${headers.length}" class="text-center p-6">Belum ada data karyawan.</td></tr>`;
+            return;
+        }
+
+        this.elements.tableBody.innerHTML = this.state.karyawan.map(k => {
+            const isAktif = k.Status === 'Aktif';
+            return `
+            <tr data-row-number="${k.rowNumber}" class="${!isAktif ? 'bg-gray-100 text-gray-400' : 'hover:bg-gray-50'}">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${k.IDKaryawan}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${k.Nama}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isAktif ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}">
+                        ${k.Status}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">${App.ui.formatCurrency(k.GajiHarian)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">${App.ui.formatCurrency(k.TotalKasbon)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm">${App.ui.formatCurrency(k.PotonganBPJS)}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <div class="flex items-center gap-2">
+                        <button title="Edit" class="edit-karyawan-btn text-blue-600 hover:text-blue-900"><i data-lucide="edit" class="h-4 w-4 pointer-events-none"></i></button>
+                        <button title="${isAktif ? 'Non-Aktifkan' : 'Aktifkan'}" data-status="${k.Status}" class="status-karyawan-btn ${isAktif ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'}">
+                            <i data-lucide="${isAktif ? 'user-x' : 'user-check'}" class="h-4 w-4 pointer-events-none"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+        lucide.createIcons();
+    },
+
+    _openModal(karyawan = null) {
+        this.elements.form.reset();
+        if (karyawan) { // Mode Edit
+            this.elements.modalTitle.textContent = 'Edit Data Karyawan';
+            document.getElementById('karyawan-row-number').value = karyawan.rowNumber;
+            document.getElementById('karyawan-nama').value = karyawan.Nama;
+            document.getElementById('karyawan-gaji').value = karyawan.GajiHarian;
+            document.getElementById('karyawan-kasbon').value = karyawan.TotalKasbon;
+            document.getElementById('karyawan-bpjs').value = karyawan.PotonganBPJS;
+        } else { // Mode Tambah Baru
+            this.elements.modalTitle.textContent = 'Tambah Karyawan Baru';
+            document.getElementById('karyawan-row-number').value = '';
+        }
+        App.ui.toggleModal(this.elements.modal, true);
+    },
+
+    async _handleSave(e) {
+        e.preventDefault();
+        const rowNumber = document.getElementById('karyawan-row-number').value;
+        const karyawanData = {
+            rowNumber: rowNumber,
+            nama: document.getElementById('karyawan-nama').value,
+            gajiHarian: document.getElementById('karyawan-gaji').value,
+            totalKasbon: document.getElementById('karyawan-kasbon').value,
+            potonganBPJS: document.getElementById('karyawan-bpjs').value,
+        };
+
+        App.ui.setLoading(this.elements.saveBtn, true);
+        try {
+            let result;
+            if (rowNumber) {
+                result = await App.api.updateKaryawanData(karyawanData);
+            } else {
+                result = await App.api.addNewKaryawan(karyawanData);
+            }
+
+            if (result.status === 'success') {
+                App.ui.toggleModal(this.elements.modal, false);
+                this.load();
+            } else { throw new Error(result.message); }
+        } catch (error) {
+            alert(`Gagal menyimpan: ${error.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.saveBtn, false);
+        }
+    },
+    
+    async _handleToggleStatus(rowNumber, currentStatus) {
+        const action = currentStatus === "Aktif" ? "menonaktifkan" : "mengaktifkan";
+        if (confirm(`Apakah Anda yakin ingin ${action} karyawan ini?`)) {
+            try {
+                const result = await App.api.toggleKaryawanStatus(rowNumber, currentStatus);
+                if (result.status === 'success') {
+                    this.load();
+                } else { throw new Error(result.message); }
+            } catch (error) {
+                alert(`Gagal mengubah status: ${error.message}`);
+            }
+        }
+    }
+},
+
+admin_laporan: {
+    state: { rawData: [] }, // PERBAIKAN: Menambahkan properti state
+    elements: {},
+    init() {
+        const content = document.getElementById('admin-laporan-content');
+        content.innerHTML = `
+            <div class="h-full flex flex-col">
+                <div class="p-4 bg-white border-b border-gray-200 no-print">
+                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                        <h3 class="text-xl font-semibold text-gray-800">Laporan Keuangan</h3>
+                        <div class="flex items-center gap-2">
+                            <select id="laporan-month-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                            <select id="laporan-year-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                            <button id="laporan-filter-btn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Filter</button>
+                            <button id="add-transaction-btn" class="ml-4 inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"><i data-lucide="plus" class="h-4 w-4 mr-2"></i> Catat Transaksi</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto min-h-0 p-6">
+                    <div class="mb-6"><div id="laba-rugi-card" class="p-6 rounded-lg text-center">
+                        <p class="text-sm uppercase tracking-wider">Laba / Rugi</p>
+                        <p id="laba-rugi-total" class="text-4xl font-bold mt-2">Rp 0</p>
+                    </div></div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" id="summary-cards"></div>
+                    <div class="bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold text-gray-800 mb-4">Analisis Pengeluaran Terbesar</h4>
+                        <input type="text" id="expense-desc-filter" placeholder="Filter berdasarkan deskripsi..." class="w-full md:w-1/2 p-2 border-gray-300 rounded-md mb-4">
+                        <ul id="top-expenses-list" class="space-y-3"></ul>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.elements = {
+            content,
+            labaRugiCard: content.querySelector('#laba-rugi-card'),
+            labaRugiTotal: content.querySelector('#laba-rugi-total'),
+            summaryCards: content.querySelector('#summary-cards'),
+            topExpensesList: content.querySelector('#top-expenses-list'),
+            monthFilter: content.querySelector('#laporan-month-filter'),
+            yearFilter: content.querySelector('#laporan-year-filter'),
+            filterBtn: content.querySelector('#laporan-filter-btn'),
+            addBtn: content.querySelector('#add-transaction-btn'),
+            expenseDescFilter: content.querySelector('#expense-desc-filter'),
+            financialModal: document.getElementById('financial-record-modal'),
+            financialForm: document.getElementById('financial-form'),
+            saveFinBtn: document.getElementById('save-fin-btn'),
+            cancelFinBtn: document.getElementById('cancel-fin-btn'),
+        };
+
+        App.ui.populateDateFilters(this.elements.monthFilter, this.elements.yearFilter);
+        this.elements.filterBtn.addEventListener('click', () => this.load());
+        this.elements.addBtn.addEventListener('click', () => this._openTransactionModal());
+        this.elements.financialForm.addEventListener('submit', (e) => this._handleSaveTransaction(e));
+        this.elements.cancelFinBtn.addEventListener('click', () => App.ui.toggleModal(this.elements.financialModal, false));
+        this.elements.expenseDescFilter.addEventListener('input', () => this._filterTopExpenses());
+        lucide.createIcons();
+    },
+
+    async load() {
+        App.ui.showPage('admin-laporan');
+        this.elements.labaRugiTotal.textContent = 'Memuat...';
+        this.elements.summaryCards.innerHTML = '';
+        this.elements.topExpensesList.innerHTML = '<li>Memuat data...</li>';
+        
+        try {
+            const month = this.elements.monthFilter.value;
+            const year = this.elements.yearFilter.value;
+            const data = await App.api.getFinancialData(month, year);
+            this.state.rawData = data;
+            this._updateUI(data);
+        } catch (e) {
+            this.elements.labaRugiTotal.textContent = 'Error';
+            this.elements.topExpensesList.innerHTML = `<li>Gagal memuat data: ${e.message || JSON.stringify(e)}</li>`;
+        }
+    },
+
+    _updateUI(data) {
+        const summary = this._calculateSummary(data);
+        this._displaySummary(summary);
+        this._displayTopExpenses(data);
+    },
+
+    _calculateSummary(data) {
+        const summary = {
+            "Bank BCA TOTO": { masuk: 0, keluar: 0 },
+            "Bank BCA Yanto": { masuk: 0, keluar: 0 },
+            "Cash": { masuk: 0, keluar: 0 },
+            totalMasuk: 0,
+            totalKeluar: 0
+        };
+
+        data.forEach(item => {
+            const jumlah = parseFloat(item.Jumlah) || 0;
+            if (item.Tipe === 'Uang Masuk') {
+                if (summary[item['Sumber/Kantong']]) {
+                    summary[item['Sumber/Kantong']].masuk += jumlah;
+                }
+                summary.totalMasuk += jumlah;
+            } else if (item.Tipe === 'Uang Keluar') {
+                if (summary[item['Sumber/Kantong']]) {
+                    summary[item['Sumber/Kantong']].keluar += jumlah;
+                }
+                summary.totalKeluar += jumlah;
+            }
+        });
+
+        summary.labaRugi = summary.totalMasuk - summary.totalKeluar;
+        return summary;
+    },
+
+    _displaySummary(summary) {
+        this.elements.labaRugiTotal.textContent = App.ui.formatCurrency(summary.labaRugi);
+        if (summary.labaRugi >= 0) {
+            this.elements.labaRugiCard.className = 'p-6 rounded-lg text-center bg-green-100 text-green-800';
+        } else {
+            this.elements.labaRugiCard.className = 'p-6 rounded-lg text-center bg-red-100 text-red-800';
+        }
+
+        this.elements.summaryCards.innerHTML = '';
+        const pockets = ["Bank BCA TOTO", "Bank BCA Yanto", "Cash"];
+        pockets.forEach(pocket => {
+            const data = summary[pocket];
+            const cardHtml = `<div class="bg-white p-6 rounded-lg shadow-sm">
+                    <h4 class="font-bold text-gray-800">${pocket}</h4>
+                    <div class="mt-4 space-y-2">
+                        <div class="flex justify-between text-sm"><span class="text-green-600">Uang Masuk</span><span class="font-medium">${App.ui.formatCurrency(data.masuk)}</span></div>
+                        <div class="flex justify-between text-sm"><span class="text-red-600">Uang Keluar</span><span class="font-medium">${App.ui.formatCurrency(data.keluar)}</span></div>
+                    </div>
+                </div>`;
+            this.elements.summaryCards.innerHTML += cardHtml;
+        });
+    },
+
+    _displayTopExpenses(data) {
+        const keyword = this.elements.expenseDescFilter.value.toLowerCase();
+        const expenses = data
+            .filter(item => item.Tipe === 'Uang Keluar' && item.Deskripsi.toLowerCase().includes(keyword))
+            .sort((a, b) => b.Jumlah - a.Jumlah);
+        
+        this.elements.topExpensesList.innerHTML = '';
+        if(expenses.length === 0) {
+            this.elements.topExpensesList.innerHTML = '<li>Tidak ada data pengeluaran yang cocok.</li>';
+            return;
+        }
+
+        expenses.slice(0, 10).forEach(item => {
+            const itemHtml = `<li class="flex justify-between items-center border-b pb-2">
+                    <div>
+                        <p class="font-medium text-gray-700">${item.Deskripsi}</p>
+                        <p class="text-xs text-gray-500">${item.Tanggal} - ${item['Sumber/Kantong']}</p>
+                    </div>
+                    <span class="font-bold text-red-600">${App.ui.formatCurrency(item.Jumlah)}</span>
+                </li>`;
+            this.elements.topExpensesList.innerHTML += itemHtml;
+        });
+    },
+
+    _filterTopExpenses() {
+        if(this.state && this.state.rawData) {
+            this._displayTopExpenses(this.state.rawData);
+        }
+    },
+    
+    _openTransactionModal() {
+        this.elements.financialForm.reset();
+        document.getElementById('fin-tanggal').valueAsDate = new Date();
+        App.ui.toggleModal(this.elements.financialModal, true);
+    },
+
+    async _handleSaveTransaction(e) {
+        e.preventDefault();
+        const record = {
+            tanggal: document.getElementById('fin-tanggal').value,
+            tipe: document.querySelector('input[name="fin-tipe"]:checked').value,
+            deskripsi: document.getElementById('fin-deskripsi').value,
+            jumlah: document.getElementById('fin-jumlah').value,
+            sumber: document.getElementById('fin-sumber').value
+        };
+
+        if(!record.tanggal || !record.deskripsi || !record.jumlah) {
+            alert('Mohon isi semua field yang wajib diisi.'); return;
+        }
+
+        App.ui.setLoading(this.elements.saveFinBtn, true);
+        try {
+            const result = await App.api.addFinancialRecord(record);
+            if (result.status === 'success') {
+                App.ui.toggleModal(this.elements.financialModal, false);
+                this.load();
+            } else { throw new Error(result.message); }
+        } catch (error) {
+            alert(`Gagal menyimpan data: ${error.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.saveFinBtn, false);
+        }
+    }
+
+},
+
+// =================================================================================
+// == KODE UNTUK PAYROLL DENGAN FITUR CETAK SLIP GAJI ADA DI BAWAH INI ==
+// =================================================================================
+
+karyawan_payroll: {
+    state: {
+        karyawanList: [],
+        selectedKaryawan: null,
+    },
+    elements: {},
+    init() {
+        const content = document.getElementById('karyawan-payroll-content');
+        content.innerHTML = `
+            <div class="p-4 bg-white border-b border-gray-200 no-print">
+                <h3 class="text-xl font-semibold text-gray-800">Proses Gaji Karyawan</h3>
+            </div>
+            <div class="flex-1 overflow-y-auto min-h-0 p-6">
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white p-6 rounded-lg shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+                        <div>
+                            <label for="payroll-periode-bulan" class="block text-sm font-medium text-gray-700">Periode Gaji</label>
+                            <div class="flex gap-2 mt-1">
+                                <select id="payroll-periode-bulan" class="w-full border-gray-300 rounded-md"></select>
+                                <select id="payroll-periode-tahun" class="w-full border-gray-300 rounded-md"></select>
+                            </div>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="payroll-karyawan-select" class="block text-sm font-medium text-gray-700">Nama Karyawan</label>
+                            <select id="payroll-karyawan-select" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></select>
+                        </div>
+                        <div id="karyawan-info-loading" class="hidden text-sm text-gray-500">Memuat data...</div>
+                    </div>
+
+                    <div id="payroll-details-area" class="hidden mt-6 bg-white p-6 rounded-lg shadow-sm">
+                        <h4 class="text-lg font-semibold text-gray-800 border-b pb-2 mb-4">Rincian Gaji: <span id="payroll-nama-karyawan" class="font-bold"></span></h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                            <div class="space-y-4">
+                                <h5 class="font-bold text-green-600">PENDAPATAN</h5>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label for="payroll-hari-kerja" class="text-sm font-medium text-gray-700 col-span-1">Hari Kerja</label>
+                                    <input type="number" id="payroll-hari-kerja" value="0" class="p-1 border rounded-md col-span-1">
+                                    <span id="payroll-gaji-pokok" class="text-right font-medium col-span-1">Rp 0</span>
+                                </div>
+                                <div class="grid grid-cols-3 items-center">
+                                    <label for="payroll-lembur" class="text-sm font-medium text-gray-700 col-span-1">Lembur (Hari)</label>
+                                    <input type="number" id="payroll-lembur" value="0" step="0.5" class="p-1 border rounded-md col-span-1">
+                                    <span id="payroll-uang-lembur" class="text-right font-medium col-span-1">Rp 0</span>
+                                </div>
+                                <div class="grid grid-cols-3 items-center pt-2 border-t">
+                                    <span class="font-bold col-span-2">Total Pendapatan</span>
+                                    <span id="payroll-total-pendapatan" class="text-right font-bold text-lg">Rp 0</span>
+                                </div>
+                            </div>
+                            <div class="space-y-4">
+                                <h5 class="font-bold text-red-600">POTONGAN</h5>
+                                <div class="grid grid-cols-2 items-center">
+                                    <label class="text-sm font-medium text-gray-700">Potongan BPJS</label>
+                                    <span id="payroll-potongan-bpjs" class="text-right font-medium">Rp 0</span>
+                                </div>
+                                <div class="grid grid-cols-2 items-center">
+                                    <label for="payroll-potongan-kasbon" class="text-sm font-medium text-gray-700">Potongan Kasbon</label>
+                                    <input type="number" id="payroll-potongan-kasbon" value="0" class="p-1 border rounded-md text-right">
+                                </div>
+                                <div class="grid grid-cols-2 items-center pt-2 border-t">
+                                    <span class="font-bold">Total Potongan</span>
+                                    <span id="payroll-total-potongan" class="text-right font-bold text-lg">Rp 0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 pt-4 border-t-2 border-gray-800 space-y-4">
+                             <div class="flex justify-between items-center text-xl font-bold">
+                                <span>GAJI BERSIH (DITERIMA)</span>
+                                <span id="payroll-gaji-bersih" class="text-green-700">Rp 0</span>
+                            </div>
+                             <div class="flex justify-between items-center text-sm">
+                                <span>Sisa Kasbon Sebelumnya: <span id="payroll-kasbon-awal">Rp 0</span></span>
+                                <span class="font-medium">Sisa Kasbon Sekarang: <span id="payroll-sisa-kasbon" class="font-bold">Rp 0</span></span>
+                            </div>
+                        </div>
+                        <div class="mt-8 flex justify-end gap-3">
+                            <button id="payroll-print-btn" class="inline-flex items-center px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 disabled:bg-gray-400" disabled>
+                                <i data-lucide="printer" class="h-5 w-5 mr-2"></i> Cetak Slip Gaji
+                            </button>
+                            <button id="payroll-process-btn" class="inline-flex items-center px-6 py-2 bg-blue-600 text-white font-bold rounded-md hover:bg-blue-700">
+                                <i data-lucide="save" class="h-5 w-5 mr-2"></i> Proses & Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        this.elements = {
+            content,
+            periodeBulan: content.querySelector('#payroll-periode-bulan'),
+            periodeTahun: content.querySelector('#payroll-periode-tahun'),
+            karyawanSelect: content.querySelector('#payroll-karyawan-select'),
+            loadingIndicator: content.querySelector('#karyawan-info-loading'),
+            detailsArea: content.querySelector('#payroll-details-area'),
+            namaKaryawan: content.querySelector('#payroll-nama-karyawan'),
+            hariKerjaInput: content.querySelector('#payroll-hari-kerja'),
+            lemburInput: content.querySelector('#payroll-lembur'),
+            potonganKasbonInput: content.querySelector('#payroll-potongan-kasbon'),
+            gajiPokok: content.querySelector('#payroll-gaji-pokok'),
+            uangLembur: content.querySelector('#payroll-uang-lembur'),
+            totalPendapatan: content.querySelector('#payroll-total-pendapatan'),
+            potonganBPJS: content.querySelector('#payroll-potongan-bpjs'),
+            totalPotongan: content.querySelector('#payroll-total-potongan'),
+            gajiBersih: content.querySelector('#payroll-gaji-bersih'),
+            kasbonAwal: content.querySelector('#payroll-kasbon-awal'),
+            sisaKasbon: content.querySelector('#payroll-sisa-kasbon'),
+            processBtn: content.querySelector('#payroll-process-btn'),
+            printBtn: content.querySelector('#payroll-print-btn'),
+        };
+        this._setupEventListeners();
+        lucide.createIcons();
+    },
+
+    _setupEventListeners() {
+        App.ui.populateDateFilters(this.elements.periodeBulan, this.elements.periodeTahun);
+        this.elements.karyawanSelect.addEventListener('change', () => this._fetchKaryawanData());
+        const calculationInputs = [this.elements.hariKerjaInput, this.elements.lemburInput, this.elements.potonganKasbonInput];
+        calculationInputs.forEach(input => input.addEventListener('input', () => this._calculatePayroll()));
+        this.elements.processBtn.addEventListener('click', () => this._handleProcessPayroll());
+        this.elements.printBtn.addEventListener('click', () => this._handlePrintSlip());
+    },
+
+    async load() {
+        App.ui.showPage('karyawan-payroll');
+        this.elements.detailsArea.classList.add('hidden');
+        this.elements.printBtn.disabled = true;
+        this.elements.karyawanSelect.innerHTML = '<option value="">Pilih Karyawan...</option>';
+        try {
+            const karyawanList = await App.api.getActiveKaryawanList();
+            this.state.karyawanList = karyawanList;
+            karyawanList.forEach(k => {
+                const option = new Option(`${k.nama} (${k.id})`, k.rowNumber);
+                this.elements.karyawanSelect.add(option);
+            });
+        } catch (e) {
+            alert(`Gagal memuat daftar karyawan: ${e.message}`);
+        }
+    },
+
+    async _fetchKaryawanData() {
+        const selectedOption = this.elements.karyawanSelect.options[this.elements.karyawanSelect.selectedIndex];
+        if (!selectedOption.value) {
+            this.elements.detailsArea.classList.add('hidden');
+            this.elements.printBtn.disabled = true;
+            this.state.selectedKaryawan = null;
+            return;
+        }
+        
+        this.elements.loadingIndicator.classList.remove('hidden');
+        this.elements.detailsArea.classList.add('hidden');
+        
+        try {
+            const allKaryawan = await App.api.getAllKaryawanData(); // Mengambil semua data untuk mencari detail
+            const selectedKaryawan = allKaryawan.find(k => k.rowNumber == selectedOption.value);
+            
+            if (selectedKaryawan) {
+                this.state.selectedKaryawan = selectedKaryawan;
+                this.elements.namaKaryawan.textContent = selectedKaryawan.Nama;
+                this.elements.potonganBPJS.textContent = App.ui.formatCurrency(selectedKaryawan.PotonganBPJS);
+                this.elements.kasbonAwal.textContent = App.ui.formatCurrency(selectedKaryawan.TotalKasbon);
+                this._calculatePayroll();
+                this.elements.detailsArea.classList.remove('hidden');
+                this.elements.printBtn.disabled = false; // Aktifkan tombol cetak
+            }
+        } catch (e) {
+            alert(`Gagal mengambil detail karyawan: ${e.message}`);
+        } finally {
+            this.elements.loadingIndicator.classList.add('hidden');
+        }
+    },
+
+    _calculatePayroll() {
+        if (!this.state.selectedKaryawan) return;
+        const k = this.state.selectedKaryawan;
+        const gajiHarian = parseFloat(k.GajiHarian) || 0;
+        const hariKerja = parseFloat(this.elements.hariKerjaInput.value) || 0;
+        const lembur = parseFloat(this.elements.lemburInput.value) || 0;
+        const potonganBPJS = parseFloat(k.PotonganBPJS) || 0;
+        const potonganKasbon = parseFloat(this.elements.potonganKasbonInput.value) || 0;
+        const totalKasbon = parseFloat(k.TotalKasbon) || 0;
+
+        const gajiPokok = gajiHarian * hariKerja;
+        const uangLembur = gajiHarian * lembur;
+        const totalPendapatan = gajiPokok + uangLembur;
+        const totalPotongan = potonganBPJS + potonganKasbon;
+        const gajiBersih = totalPendapatan - totalPotongan;
+        const sisaKasbon = totalKasbon - potonganKasbon;
+
+        this.elements.gajiPokok.textContent = App.ui.formatCurrency(gajiPokok);
+        this.elements.uangLembur.textContent = App.ui.formatCurrency(uangLembur);
+        this.elements.totalPendapatan.textContent = App.ui.formatCurrency(totalPendapatan);
+        this.elements.totalPotongan.textContent = App.ui.formatCurrency(totalPotongan);
+        this.elements.gajiBersih.textContent = App.ui.formatCurrency(gajiBersih);
+        this.elements.sisaKasbon.textContent = App.ui.formatCurrency(sisaKasbon);
+    },
+
+    async _handleProcessPayroll() {
+        if (!this.state.selectedKaryawan) {
+            alert('Pilih karyawan terlebih dahulu.'); return;
+        }
+        
+        if (!confirm(`Apakah Anda yakin ingin memproses payroll untuk ${this.state.selectedKaryawan.Nama}? Aksi ini akan mengubah sisa kasbon dan tidak bisa diurungkan.`)) {
+            return;
+        }
+
+        const payrollData = {
+            rowNumber: this.state.selectedKaryawan.rowNumber,
+            periodeBulan: this.elements.periodeBulan.value,
+            periodeTahun: this.elements.periodeTahun.value,
+            hariKerja: this.elements.hariKerjaInput.value || 0,
+            lembur: this.elements.lemburInput.value || 0,
+            potonganKasbon: this.elements.potonganKasbonInput.value || 0
+        };
+
+        App.ui.setLoading(this.elements.processBtn, true);
+        try {
+            const result = await App.api.processPayroll(payrollData);
+            if (result.status === 'success') {
+                alert(result.message);
+                this.load(); // Muat ulang halaman untuk reset form
+            } else {
+                throw new Error(result.message);
+            }
+        } catch (e) {
+            alert(`Error: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.processBtn, false);
+        }
+    },
+
+    async _handlePrintSlip() {
+        if (!this.state.selectedKaryawan) {
+            alert('Pilih karyawan untuk mencetak slip gaji.');
+            return;
+        }
+        
+        const btn = this.elements.printBtn;
+        btn.disabled = true;
+        btn.innerHTML = `<i data-lucide="loader-2" class="animate-spin h-5 w-5 mr-2"></i> Mempersiapkan...`;
+        lucide.createIcons();
+
+        try {
+            // 1. Kumpulkan data
+            const k = this.state.selectedKaryawan;
+            const periodeBulan = this.elements.periodeBulan.options[this.elements.periodeBulan.selectedIndex].text;
+            const periodeTahun = this.elements.periodeTahun.value;
+            
+            const parseCurrency = (text) => parseFloat(text.replace(/[^0-9-]/g, '')) || 0;
+
+            const data = {
+                nama: k.Nama,
+                id: k.IDKaryawan,
+                periode: `${periodeBulan} ${periodeTahun}`,
+                gajiPokok: parseCurrency(this.elements.gajiPokok.textContent),
+                uangLembur: parseCurrency(this.elements.uangLembur.textContent),
+                totalPendapatan: parseCurrency(this.elements.totalPendapatan.textContent),
+                potonganBPJS: parseCurrency(this.elements.potonganBPJS.textContent),
+                potonganKasbon: parseCurrency(this.elements.potonganKasbonInput.value),
+                totalPotongan: parseCurrency(this.elements.totalPotongan.textContent),
+                gajiBersih: parseCurrency(this.elements.gajiBersih.textContent),
+            };
+
+            // 2. Ambil template dari server
+            const htmlTemplate = await App.api.getSlipGajiHtml();
+            
+            // 3. Buka jendela baru dan isi template
+            const newWindow = window.open("", "Cetak Slip Gaji", "width=850,height=650");
+            newWindow.document.write(htmlTemplate);
+            newWindow.document.close();
+
+            // 4. Masukkan data ke dalam template
+            const doc = newWindow.document;
+            doc.getElementById('nama-karyawan').textContent = data.nama;
+            doc.getElementById('id-karyawan').textContent = data.id;
+            doc.getElementById('periode-gaji').textContent = data.periode;
+            doc.getElementById('tanggal-cetak').textContent = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+            doc.getElementById('gaji-pokok').textContent = App.ui.formatCurrency(data.gajiPokok);
+            doc.getElementById('uang-lembur').textContent = App.ui.formatCurrency(data.uangLembur);
+            doc.getElementById('total-pendapatan').textContent = App.ui.formatCurrency(data.totalPendapatan);
+            doc.getElementById('potongan-bpjs').textContent = App.ui.formatCurrency(data.potonganBPJS);
+            doc.getElementById('potongan-kasbon').textContent = App.ui.formatCurrency(data.potonganKasbon);
+            doc.getElementById('total-potongan').textContent = App.ui.formatCurrency(data.totalPotongan);
+            doc.getElementById('gaji-bersih').textContent = App.ui.formatCurrency(data.gajiBersih);
+
+            // 5. Cetak dan tutup jendela
+            setTimeout(() => {
+                newWindow.print();
+                newWindow.close();
+            }, 300);
+
+        } catch (error) {
+            alert('Gagal mempersiapkan slip gaji: ' + error.message);
+        } finally {
+            // 6. Kembalikan tombol ke kondisi normal
+            btn.disabled = false;
+            btn.innerHTML = `<i data-lucide="printer" class="h-5 w-5 mr-2"></i> Cetak Slip Gaji`;
+            lucide.createIcons();
+        }
+    }
+},
+
+
+barang_stok: {
+    state: {
+        stok: [],
+        selectedBahan: null,
+        updateType: null,
+        debounceTimer: null
+    },
+    elements: {},
+    init() {
+        const content = document.getElementById('barang-stok-content');
+        content.innerHTML = `
+            <div class="p-4 bg-white border-b border-gray-200 no-print">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                    <h3 class="text-xl font-semibold text-gray-800">Manajemen Stok Bahan</h3>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="stok-search-input" placeholder="Cari kode atau nama bahan..." class="w-full sm:w-64 p-2 border border-gray-300 rounded-md">
+                    </div>
+                </div>
+                <div class="flex items-center gap-2 mt-4">
+                    <button id="add-new-bahan-btn" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"><i data-lucide="plus" class="h-4 w-4 mr-2"></i> Tambah Bahan Baru</button>
+                    <button id="add-stok-masuk-btn" class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700"><i data-lucide="arrow-down-circle" class="h-4 w-4 mr-2"></i> Catat Stok Masuk</button>
+                    <button id="add-stok-keluar-btn" class="inline-flex items-center px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700"><i data-lucide="arrow-up-circle" class="h-4 w-4 mr-2"></i> Catat Stok Keluar</button>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto min-h-0">
+                <div class="overflow-x-auto bg-white">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-800"></thead>
+                        <tbody id="stok-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+
+        this.elements = {
+            content,
+            tableHead: content.querySelector('thead'),
+            tableBody: content.querySelector('tbody'),
+            searchInput: content.querySelector('#stok-search-input'),
+            addNewBahanBtn: content.querySelector('#add-new-bahan-btn'),
+            stokMasukBtn: content.querySelector('#add-stok-masuk-btn'),
+            stokKeluarBtn: content.querySelector('#add-stok-keluar-btn'),
+            newBahanModal: document.getElementById('new-bahan-modal'),
+            newBahanForm: document.getElementById('new-bahan-form'),
+            updateStokModal: document.getElementById('update-stok-modal'),
+            updateStokForm: document.getElementById('update-stok-form'),
+        };
+
+        this.elements.searchInput.addEventListener('input', () => this._handleSearch());
+        this.elements.addNewBahanBtn.addEventListener('click', () => this._openNewBahanModal());
+        this.elements.stokMasukBtn.addEventListener('click', () => this._openUpdateStokModal('MASUK'));
+        this.elements.stokKeluarBtn.addEventListener('click', () => this._openUpdateStokModal('KELUAR'));
+        this.elements.newBahanForm.addEventListener('submit', (e) => this._handleSaveNewBahan(e));
+        this.elements.updateStokForm.addEventListener('submit', (e) => this._handleUpdateStok(e));
+        document.getElementById('cancel-new-bahan-btn').addEventListener('click', () => App.ui.toggleModal(this.elements.newBahanModal, false));
+        document.getElementById('cancel-update-stok-btn').addEventListener('click', () => App.ui.toggleModal(this.elements.updateStokModal, false));
+        lucide.createIcons();
+    },
+
+    async load() {
+        App.ui.showPage('barang-stok');
+        this.elements.tableBody.innerHTML = `<tr><td colspan="8" class="text-center p-6">Memuat data stok...</td></tr>`;
+        try {
+            const data = await App.api.getStokBahan();
+            this.state.stok = data.sort((a, b) => a.KodeBahan.localeCompare(b.KodeBahan));
+            this.render();
+        } catch (e) {
+            this.elements.tableBody.innerHTML = `<tr><td colspan="8" class="text-center p-6 text-red-500">Gagal memuat data: ${e.message}</td></tr>`;
+        }
+    },
+
+    render(dataToRender = this.state.stok) {
+        const headers = ["Pilih", "KodeBahan", "NamaBahan", "Kategori", "Stok", "Satuan", "Lokasi", "LastUpdate"];
+        this.elements.tableHead.innerHTML = `<tr>${headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}</tr>`;
+        if (dataToRender.length === 0) {
+            this.elements.tableBody.innerHTML = `<tr><td colspan="${headers.length}" class="text-center p-6">Belum ada data bahan. Silakan tambahkan bahan baru.</td></tr>`;
+            return;
+        }
+        this.elements.tableBody.innerHTML = dataToRender.map(item => `
+            <tr>
+                <td class="px-6 py-4"><input type="radio" name="selected-bahan" value="${item.KodeBahan}" class="form-radio"></td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.KodeBahan}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item.NamaBahan}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Kategori || ''}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-bold ${item.Stok <= 0 ? 'text-red-600' : 'text-gray-900'}">${item.Stok}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Satuan}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Lokasi || ''}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.LastUpdate}</td>
+            </tr>
+        `).join('');
+    },
+
+    _handleSearch() {
+        clearTimeout(this.state.debounceTimer);
+        this.state.debounceTimer = setTimeout(() => {
+            const keyword = this.elements.searchInput.value.toLowerCase();
+            if (!keyword) { this.render(this.state.stok); return; }
+            const filteredData = this.state.stok.filter(item => 
+                item.KodeBahan.toLowerCase().includes(keyword) || 
+                item.NamaBahan.toLowerCase().includes(keyword)
+            );
+            this.render(filteredData);
+        }, 300);
+    },
+
+    _openNewBahanModal() {
+        this.elements.newBahanForm.reset();
+        App.ui.toggleModal(this.elements.newBahanModal, true);
+    },
+
+    async _handleSaveNewBahan(e) {
+        e.preventDefault();
+        const btn = document.getElementById('save-new-bahan-btn');
+        const bahanData = {
+            kode: document.getElementById('bahan-kode').value.toUpperCase(),
+            nama: document.getElementById('bahan-nama').value,
+            satuan: document.getElementById('bahan-satuan').value,
+            kategori: document.getElementById('bahan-kategori').value,
+            stok: document.getElementById('bahan-stok').value,
+            lokasi: document.getElementById('bahan-lokasi').value,
+        };
+        if (!bahanData.kode || !bahanData.nama || !bahanData.satuan) {
+            alert('Kode, Nama, dan Satuan Bahan wajib diisi.'); return;
+        }
+        App.ui.setLoading(btn, true);
+        try {
+            const result = await App.api.addNewBahan(bahanData);
+            if (result.status === 'success') {
+                App.ui.toggleModal(this.elements.newBahanModal, false); this.load();
+            } else { throw new Error(result.message); }
+        } catch (error) {
+            alert(`Gagal menyimpan: ${error.message}`);
+        } finally {
+            App.ui.setLoading(btn, false);
+        }
+    },
+
+    _openUpdateStokModal(tipe) {
+        const selectedRadio = this.elements.tableBody.querySelector('input[name="selected-bahan"]:checked');
+        if (!selectedRadio) {
+            alert('Silakan pilih satu bahan dari tabel terlebih dahulu.'); return;
+        }
+        const kodeBahan = selectedRadio.value;
+        const selectedBahan = this.state.stok.find(item => item.KodeBahan === kodeBahan);
+        this.state.selectedBahan = selectedBahan;
+        this.state.updateType = tipe;
+        document.getElementById('update-stok-title').textContent = tipe === 'MASUK' ? 'Catat Stok Masuk' : 'Catat Stok Keluar';
+        document.getElementById('update-stok-nama-bahan').textContent = selectedBahan.NamaBahan;
+        this.elements.updateStokForm.reset();
+        App.ui.toggleModal(this.elements.updateStokModal, true);
+    },
+
+    async _handleUpdateStok(e) {
+        e.preventDefault();
+        if (!this.state.selectedBahan || !this.state.updateType) return;
+        const btn = document.getElementById('save-update-stok-btn');
+        const updateData = {
+            kode: this.state.selectedBahan.KodeBahan,
+            nama: this.state.selectedBahan.NamaBahan,
+            tipe: this.state.updateType,
+            jumlah: document.getElementById('update-stok-jumlah').value,
+            keterangan: document.getElementById('update-stok-keterangan').value,
+        };
+        if (!updateData.jumlah || parseFloat(updateData.jumlah) <= 0) {
+            alert('Jumlah harus diisi dan lebih besar dari 0.'); return;
+        }
+        App.ui.setLoading(btn, true);
+        try {
+            const result = await App.api.updateStok(updateData);
+            if (result.status === 'success') {
+                App.ui.toggleModal(this.elements.updateStokModal, false); this.load();
+            } else { throw new Error(result.message); }
+        } catch (error) {
+            alert(`Gagal update stok: ${error.message}`);
+        } finally {
+            App.ui.setLoading(btn, false);
+        }
+    }
+},
+
+
+            admin_quotation: {
+                state: { data: [], headers: ["Aksi", "Nomor Quotation", "Tanggal", "Nama Customer", "Project", "Total", "Status"] },
+                elements: {},
+                init() {
+                    const content = document.getElementById('admin-quotation-content');
+                    content.innerHTML = `
+                        <div class="p-4 bg-white border-b border-gray-200 no-print">
+                            <div class="flex justify-between items-center">
+                                <h3 class="text-xl font-semibold text-gray-800">Daftar Quotation</h3>
+                                <button id="add-quotation-btn" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700"><i data-lucide="plus" class="h-4 w-4 mr-2"></i> Buat Quotation Baru</button>
+                            </div>
+                        </div>
+                        <div class="flex-1 overflow-y-auto min-h-0">
+                            <div class="overflow-x-auto bg-white">
+                                <table class="min-w-full divide-y divide-gray-200">
+                                    <thead class="bg-gray-800"></thead>
+                                    <tbody class="divide-y divide-gray-200"></tbody>
+                                </table>
+                            </div>
+                        </div>`;
+                    const quotationModal = document.getElementById('quotation-modal');
+                    quotationModal.innerHTML = `
+                        <div class="modal-content relative mx-auto p-6 border w-full max-w-4xl shadow-lg rounded-md bg-white transform -translate-y-10 flex flex-col max-h-[90vh]">
+                            <h3 id="quotation-modal-title" class="text-xl font-semibold text-gray-900 mb-4">Buat Penawaran Baru</h3>
+                            <div class="flex-1 overflow-y-auto pr-2">
+                                <input type="hidden" id="quo-row-number"><input type="hidden" id="quo-number"><input type="hidden" id="quo-status">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                    <div><label for="quo-customer" class="block text-sm font-medium text-gray-700">Nama Customer</label><input type="text" id="quo-customer" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
+                                    <div><label for="quo-project" class="block text-sm font-medium text-gray-700">Nama Proyek</label><input type="text" id="quo-project" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></div>
+                                </div>
+                                <div class="overflow-x-auto mb-4">
+                                    <table class="min-w-full"><thead class="bg-gray-100 sticky top-0 z-10"><tr>
+                                        <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase">Deskripsi</th><th class="p-2 text-left text-xs font-medium text-gray-500 uppercase w-24">Ukuran</th>
+                                        <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase w-20">Qty</th><th class="p-2 text-left text-xs font-medium text-gray-500 uppercase w-32">Harga</th>
+                                        <th class="p-2 text-left text-xs font-medium text-gray-500 uppercase w-40">Total Harga</th><th class="p-2 w-12"></th>
+                                    </tr></thead><tbody id="quo-items-body"></tbody></table>
+                                </div>
+                                <button id="add-quo-item-btn" class="text-sm text-blue-600 hover:underline mb-4 inline-flex items-center"><i data-lucide="plus-circle" class="h-4 w-4 mr-1"></i>Tambah Item</button>
+                            </div>
+                            <div class="mt-auto pt-4">
+                                <div class="flex justify-end mb-6"><div class="w-full max-w-xs">
+                                    <div class="flex justify-between py-1 border-b"><span class="font-medium">Subtotal</span><span id="quo-subtotal">Rp 0</span></div>
+                                    <div class="flex justify-between py-1 font-bold text-lg"><span>TOTAL</span><span id="quo-grand-total" class="font-bold text-lg">Rp 0</span></div>
+                                </div></div>
+                                <div class="flex justify-end gap-3">
+                                    <button id="cancel-quo-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Batal</button>
+                                    <button id="save-quo-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Simpan Penawaran</button>
+                                </div>
+                            </div>
+                        </div>`;
+                    const viewQuotationModal = document.getElementById('view-quotation-modal');
+                    viewQuotationModal.innerHTML = `
+                        <div class="modal-content relative mx-auto p-6 border w-full max-w-4xl shadow-lg rounded-md bg-white transform -translate-y-10">
+                            <div id="quotation-print-area"></div>
+                            <div class="mt-6 flex justify-end gap-3 no-print">
+                                <button id="close-view-quo-btn" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300">Tutup</button>
+                                <button id="print-quo-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"><i data-lucide="printer" class="h-4 w-4 mr-2"></i>Cetak</button>
+                            </div>
+                        </div>`;
+                    this.elements = { content, tableHead: content.querySelector('thead'), tableBody: content.querySelector('tbody'), addBtn: content.querySelector('#add-quotation-btn'), quotationModal, viewQuotationModal, printArea: viewQuotationModal.querySelector('#quotation-print-area') };
+                    this.elements.addBtn.addEventListener('click', () => this.handleOpenModal());
+                    this.elements.tableBody.addEventListener('click', e => this.handleTableClick(e));
+                    quotationModal.addEventListener('click', e => this.handleModalClick(e));
+                    viewQuotationModal.addEventListener('click', e => {
+                        const target = e.target.closest('button'); if (!target) return;
+                        if (target.id === 'close-view-quo-btn') App.ui.toggleModal(this.elements.viewQuotationModal, false);
+                        if (target.id === 'print-quo-btn') window.print();
+                    });
+                    quotationModal.querySelector('#quo-items-body').addEventListener('input', () => this.updateTotals());
+                    lucide.createIcons();
+                },
+                async load(){ 
+                    App.ui.showPage('admin-quotation');
+                    this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4">Memuat data...</td></tr>`;
+                    try {
+                        const data = await App.api.getQuotations(); this.state.data = data; this.render();
+                    } catch (err) { this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4 text-red-500">Gagal memuat data.</td></tr>`; }
+                },
+                render() {
+                    this.elements.tableHead.innerHTML = `<tr>${this.state.headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}</tr>`;
+                    if (this.state.data.length === 0) {
+                        this.elements.tableBody.innerHTML = `<tr><td colspan="${this.state.headers.length}" class="text-center p-4">Belum ada quotation.</td></tr>`; return;
+                    }
+                    this.elements.tableBody.innerHTML = this.state.data.map(item => {
+                        const statusColor = item.Status === 'Accepted' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800';
+                        return `<tr data-row-number="${item.rowNumber}">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><div class="flex items-center gap-2">
+                                <button title="Lihat/Cetak" class="view-quo-btn text-blue-600 hover:text-blue-900"><i data-lucide="eye" class="h-4 w-4 pointer-events-none"></i></button>
+                                <button title="Edit" class="edit-quo-btn text-gray-600 hover:text-gray-900"><i data-lucide="edit-3" class="h-4 w-4 pointer-events-none"></i></button>
+                                <button title="Hapus" class="delete-quo-btn text-red-600 hover:text-red-900"><i data-lucide="trash-2" class="h-4 w-4 pointer-events-none"></i></button>
+                            </div></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item['Nomor Quotation']}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Tanggal}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item['Nama Customer']}</td><td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Project}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${App.ui.formatCurrency(item.Total)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500"><span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusColor}">${item.Status}</span></td>
+                        </tr>`;
+                    }).join('');
+                    lucide.createIcons();
+                },
+                handleTableClick(e) {
+                    const row = e.target.closest('tr'); if (!row) return; const rowNumber = row.dataset.rowNumber;
+                    if (e.target.closest('.view-quo-btn')) this.handleView(rowNumber);
+                    if (e.target.closest('.edit-quo-btn')) this.handleOpenModal(rowNumber);
+                    if (e.target.closest('.delete-quo-btn')) this.handleDelete(rowNumber, row.cells[1].textContent);
+                },
+                handleModalClick(e) {
+                    const target = e.target.closest('button'); if (!target) return;
+                    if (target.id === 'cancel-quo-btn') App.ui.toggleModal(this.elements.quotationModal, false);
+                    if (target.id === 'add-quo-item-btn') this.addQuotationItemRow();
+                    if (target.classList.contains('remove-item-btn')) { target.closest('tr').remove(); this.updateTotals(); }
+                    if (target.id === 'save-quo-btn') this.handleSave();
+                },
+                async handleOpenModal(rowNumber = null) {
+                    this.resetForm();
+                    if (rowNumber) {
+                        try {
+                            const data = await App.api.getQuotationByRow(rowNumber);
+                            if (!data) { alert("Gagal memuat data quotation."); return; }
+                            document.getElementById('quotation-modal-title').textContent = `Edit Penawaran ${data['Nomor Quotation']}`;
+                            document.getElementById('quo-row-number').value = data.rowNumber; document.getElementById('quo-number').value = data['Nomor Quotation'];
+                            document.getElementById('quo-status').value = data.Status; document.getElementById('quo-customer').value = data['Nama Customer'];
+                            document.getElementById('quo-project').value = data.Project;
+                            const items = Array.isArray(data.Items) ? data.Items : [];
+                            if (items.length > 0) { items.forEach(item => this.addQuotationItemRow(item)); } else { this.addQuotationItemRow(); }
+                        } catch (err) { alert(`Terjadi kesalahan: ${err.message}`); return; }
+                    } else {
+                        document.getElementById('quotation-modal-title').textContent = 'Buat Penawaran Baru';
+                        this.addQuotationItemRow();
+                    }
+                    this.updateTotals(); App.ui.toggleModal(this.elements.quotationModal, true);
+                },
+                async handleSave() {
+                    const rowNumber = document.getElementById('quo-row-number').value;
+                    const quotationData = { customerName: document.getElementById('quo-customer').value, project: document.getElementById('quo-project').value, items: [], total: 0 };
+                    let grandTotal = 0;
+                    document.getElementById('quo-items-body').querySelectorAll('.quo-item-row').forEach(row => {
+                        const uk = parseFloat(row.querySelector('[name="uk"]').value) || 0, qty = parseFloat(row.querySelector('[name="qty"]').value) || 0, price = parseFloat(row.querySelector('[name="price"]').value) || 0;
+                        quotationData.items.push({ description: row.querySelector('[name="description"]').value, uk, qty, price, total: uk * qty * price });
+                        grandTotal += uk * qty * price;
+                    });
+                    quotationData.total = grandTotal;
+                    if (!quotationData.customerName || quotationData.items.length === 0) { alert('Nama Customer dan minimal satu item wajib diisi.'); return; }
+                    try {
+                        if (rowNumber) {
+                            quotationData.quotationNumber = document.getElementById('quo-number').value;
+                            quotationData.status = document.getElementById('quo-status').value;
+                            await App.api.updateQuotation(rowNumber, quotationData);
+                        } else { await App.api.addQuotation(quotationData); }
+                        App.ui.toggleModal(this.elements.quotationModal, false); this.load();
+                    } catch (err) { alert(`Gagal menyimpan: ${err.message}`); }
+                },
+                handleDelete(rowNumber, quoNumber) { if (confirm(`Yakin ingin menghapus Quotation ${quoNumber}?`)) { App.api.deleteQuotation(rowNumber).then(() => this.load()).catch(err => alert(`Gagal menghapus: ${err.message}`)); } },
+                async handleView(rowNumber) {
+                    try {
+                        const data = await App.api.getQuotationByRow(rowNumber);
+                        if (!data) { alert("Gagal memuat data quotation."); return; }
+                        this.renderForViewing(data); App.ui.toggleModal(this.elements.viewQuotationModal, true);
+                    } catch (err) { alert(`Terjadi kesalahan: ${err.message}`); }
+                },
+                renderForViewing(data) {
+                    const items = Array.isArray(data.Items) ? data.Items : [];
+                    const itemRows = items.map((item, index) => `<tr class="border-b"><td class="p-2 border-r text-center">${index + 1}</td><td class="p-2 border-r">${item.description || ''}</td><td class="p-2 border-r text-center">${item.uk || 0}</td><td class="p-2 border-r text-center">${item.qty || 0}</td><td class="p-2 border-r text-right">${App.ui.formatCurrency(item.price)}</td><td class="p-2 text-right">${App.ui.formatCurrency(item.total)}</td></tr>`).join('');
+                    this.elements.printArea.innerHTML = `<div class="print-area"><h1 class="text-center text-xl font-bold">CV. TOTO ALUMINIUM MANUFACTURE</h1><p class="text-center text-xs">Jl. Rawa Mulya No.15 RT 002/001, Mustika Jaya, Kota Bekasi, Jawa Barat, 17158</p><hr class="my-4 border-black"><h2 class="text-center text-lg font-bold underline mb-4">PENAWARAN</h2><div class="grid grid-cols-2 gap-4 text-sm mb-4"><div><p><strong>Pen No.:</strong> ${data['Nomor Quotation']}</p><p><strong>Order Date:</strong> ${data.Tanggal}</p></div><div class="text-right"><p><strong>To:</strong></p><p class="font-bold">${data['Nama Customer']}</p></div></div><table class="w-full border-collapse border text-sm"><thead class="bg-gray-200 font-bold"><tr><th class="p-2 border-r">No</th><th class="p-2 border-r">Description</th><th class="p-2 border-r">UK</th><th class="p-2 border-r">Qty</th><th class="p-2 border-r">Price</th><th class="p-2">Total Price</th></tr></thead><tbody>${itemRows}</tbody></table><div class="flex justify-end mt-4"><div class="w-1/3 text-sm"><div class="flex justify-between border-b p-1"><span>Total</span><span>${App.ui.formatCurrency(data.Total)}</span></div><div class="flex justify-between p-1 font-bold"><span>Sisa Bayar</span><span>${App.ui.formatCurrency(data.Total)}</span></div></div></div></div>`;
+                },
+                resetForm() {
+                    document.getElementById('quotation-modal-title').textContent = 'Buat Penawaran Baru';
+                    document.getElementById('quo-row-number').value = ''; document.getElementById('quo-number').value = '';
+                    document.getElementById('quo-status').value = ''; document.getElementById('quo-customer').value = '';
+                    document.getElementById('quo-project').value = ''; document.getElementById('quo-items-body').innerHTML = '';
+                },
+                addQuotationItemRow(item = {}) {
+                    const row = document.createElement('tr'); row.className = 'quo-item-row';
+                    row.innerHTML = `<td class="p-1"><input type="text" name="description" value="${item.description || ''}" class="w-full p-1 border-gray-300 rounded-md"></td><td class="p-1"><input type="number" name="uk" value="${item.uk || ''}" class="w-full p-1 border-gray-300 rounded-md"></td><td class="p-1"><input type="number" name="qty" value="${item.qty || ''}" class="w-full p-1 border-gray-300 rounded-md"></td><td class="p-1"><input type="number" name="price" value="${item.price || ''}" class="w-full p-1 border-gray-300 rounded-md"></td><td class="p-1 text-right font-medium">Rp 0</td><td class="p-1 text-center"><button class="text-red-500 hover:text-red-700 remove-item-btn"><i data-lucide="trash-2" class="h-4 w-4"></i></button></td>`;
+                    document.getElementById('quo-items-body').appendChild(row);
+                    lucide.createIcons();
+                },
+                updateTotals() {
+                    let subtotal = 0;
+                    document.getElementById('quo-items-body').querySelectorAll('.quo-item-row').forEach(row => {
+                        const uk = parseFloat(row.querySelector('[name="uk"]').value) || 0, qty = parseFloat(row.querySelector('[name="qty"]').value) || 0, price = parseFloat(row.querySelector('[name="price"]').value) || 0;
+                        const lineTotal = uk * qty * price ;
+                        row.cells[4].textContent = App.ui.formatCurrency(lineTotal);
+                        subtotal += lineTotal;
+                    });
+                    document.getElementById('quo-subtotal').textContent = App.ui.formatCurrency(subtotal);
+                    document.getElementById('quo-grand-total').textContent = App.ui.formatCurrency(subtotal);
+                }
+            },
+
+            admin_invoice: {
+                elements: {},
+                init() {
+                    const content = document.getElementById('admin-invoice-content');
+                    content.innerHTML = `
+                        <div class="p-4 bg-white h-full flex flex-col">
+                            <div class="mb-8 no-print">
+                                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-4">
+                                    <h3 class="text-lg font-semibold text-gray-700">Ringkasan Invoice</h3>
+                                    <div class="flex items-center gap-2">
+                                       <select id="inv-month-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                                       <select id="inv-year-filter" class="border-gray-300 rounded-md shadow-sm"></select>
+                                       <button id="inv-filter-btn" class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700">Filter</button>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div class="bg-blue-100 p-6 rounded-lg"><p class="text-sm text-blue-800">Total Invoice</p><p id="inv-total" class="text-2xl font-bold text-blue-900">0</p></div>
+                                    <div class="bg-green-100 p-6 rounded-lg"><p class="text-sm text-green-800">Invoice Lunas</p><p id="inv-paid" class="text-2xl font-bold text-green-900">0</p></div>
+                                    <div class="bg-red-100 p-6 rounded-lg"><p class="text-sm text-red-800">Belum Lunas</p><p id="inv-unpaid" class="text-2xl font-bold text-red-900">0</p></div>
+                                </div>
+                            </div>
+                            <div class="border-t pt-8 flex-1 flex flex-col min-h-0">
+                                <h3 class="text-lg font-semibold text-gray-700 mb-4 no-print">Cari & Cetak Invoice</h3>
+                                <div class="flex gap-2 items-center mb-4 no-print">
+                                    <input type="text" id="invoice-search-input" placeholder="Ketik Nomor Invoice..." class="w-full md:w-1/3 p-2 border-gray-300 rounded-md shadow-sm">
+                                    <button id="invoice-search-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"><i data-lucide="search" class="h-5 w-5"></i></button>
+                                </div>
+                                <div id="invoice-print-area-wrapper" class="mt-6 bg-white rounded-lg flex-1 overflow-y-auto hidden print-area"></div>
+                            </div>
+                        </div>`;
+                    this.elements = {
+                        content, totalCard: content.querySelector('#inv-total'), paidCard: content.querySelector('#inv-paid'),
+                        unpaidCard: content.querySelector('#inv-unpaid'), searchInput: content.querySelector('#invoice-search-input'),
+                        searchBtn: content.querySelector('#invoice-search-btn'), printAreaWrapper: content.querySelector('#invoice-print-area-wrapper'),
+                        monthFilter: content.querySelector('#inv-month-filter'), yearFilter: content.querySelector('#inv-year-filter'),
+                        filterBtn: content.querySelector('#inv-filter-btn')
+                    };
+                    this.elements.searchBtn.addEventListener('click', () => this.handleSearch());
+                    this.elements.filterBtn.addEventListener('click', () => this._loadDashboardData());
+                    App.ui.populateDateFilters(this.elements.monthFilter, this.elements.yearFilter);
+                    lucide.createIcons();
+                },
+                async load() {
+                    App.ui.showPage('admin-invoice'); this.elements.printAreaWrapper.classList.add('hidden');
+                    this.elements.searchInput.value = ''; await this._loadDashboardData();
+                },
+                async _loadDashboardData() {
+                    this.elements.totalCard.textContent = '...'; this.elements.paidCard.textContent = '...'; this.elements.unpaidCard.textContent = '...';
+                    const month = this.elements.monthFilter.value; const year = this.elements.yearFilter.value;
+                    try {
+                        const data = await App.api.getWorkOrders(month, year); if (!data) throw new Error('Data tidak ditemukan');
+                        const invoices = data.reduce((acc, curr) => {
+                            const invNum = curr['NO INV'];
+                            if (invNum) { if (!acc[invNum]) { acc[invNum] = { paid: curr['Pembayaran'] === true || String(curr['Pembayaran']).toUpperCase() === 'TRUE' }; } }
+                            return acc;
+                        }, {});
+                        const total = Object.keys(invoices).length;
+                        const paid = Object.values(invoices).filter(inv => inv.paid).length;
+                        const unpaid = total - paid;
+                        this.elements.totalCard.textContent = total; this.elements.paidCard.textContent = paid; this.elements.unpaidCard.textContent = unpaid;
+                    } catch (err) {
+                        this.elements.totalCard.textContent = 'Error'; this.elements.paidCard.textContent = 'Error'; this.elements.unpaidCard.textContent = 'Error';
+                    }
+                },
+                async handleSearch() {
+                    const invoiceNumber = this.elements.searchInput.value.trim(); if (!invoiceNumber) { alert('Silakan masukkan nomor invoice.'); return; }
+                    this.elements.printAreaWrapper.innerHTML = `<p class="text-center p-8">Mencari data invoice...</p>`;
+                    this.elements.printAreaWrapper.classList.remove('hidden');
+                    try {
+                        const invoiceData = await App.api.getInvoiceData(invoiceNumber); this.renderInvoice(invoiceData);
+                    } catch (err) { this.elements.printAreaWrapper.innerHTML = `<p class="text-center p-8 text-red-500">Gagal mencari data. ${err.message}</p>`; }
+                },
+                renderInvoice(data) {
+                    if (!data || data.length === 0) {
+                        this.elements.printAreaWrapper.innerHTML = `<p class="text-center p-8">Nomor Invoice tidak ditemukan.</p>`; return;
+                    }
+                    const customerName = data[0]['Nama Customer'], invoiceNumber = data[0]['NO INV'], invoiceDate = data[0]['Tanggal'];
+                    let total = 0;
+                    const itemRows = data.map((item, index) => {
+                        const u = parseFloat(item['Ukuran'])||0, q = parseFloat(item['Qty'])||0, h = parseFloat(item['Harga'])||0;
+                        const lineTotal = u * q * h; total += lineTotal;
+                        return `<tr class="border-b"><td class="p-2 border-r text-center">${index+1}</td><td class="p-2 border-r">${item.Deskripsi||''}</td><td class="p-2 border-r text-center">${item.Ukuran||0}</td><td class="p-2 border-r text-center">${item.Qty||0}</td><td class="p-2 border-r text-right">${App.ui.formatCurrency(item.Harga)}</td><td class="p-2 text-right">${App.ui.formatCurrency(lineTotal)}</td></tr>`;
+                    }).join('');
+                    this.elements.printAreaWrapper.innerHTML = `
+                        <div class="p-8">
+                            <h1 class="text-center text-xl font-bold">CV. TOTO ALUMINIUM MANUFACTURE</h1><p class="text-center text-xs">Jl. Rawa Mulya No.15 RT 002/001, Mustika Jaya, Kota Bekasi, Jawa Barat, 17158</p>
+                            <hr class="my-4 border-black"><h2 class="text-center text-lg font-bold underline mb-4">INVOICE</h2>
+                            <div class="grid grid-cols-2 gap-4 text-sm mb-4">
+                                <div><p><strong>No. Inv:</strong> ${invoiceNumber}</p><p><strong>Tanggal:</strong> ${invoiceDate}</p></div>
+                                <div class="text-right"><p><strong>Kepada Yth:</strong></p><p class="font-bold">${customerName}</p></div>
+                            </div>
+                            <table class="w-full border-collapse border text-sm">
+                                <thead class="bg-gray-200 font-bold"><tr><th class="p-2 border-r">No</th><th class="p-2 border-r">Keterangan</th><th class="p-2 border-r">Ukuran</th><th class="p-2 border-r">Qty</th><th class="p-2 border-r">Harga Satuan</th><th class="p-2">Jumlah</th></tr></thead>
+                                <tbody>${itemRows}</tbody>
+                            </table>
+                            <div class="flex justify-end mt-4"><div class="w-1/3 text-sm">
+                                <div class="flex justify-between p-1 font-bold"><span>TOTAL</span><span>${App.ui.formatCurrency(total)}</span></div>
+                            </div></div>
+                            <div class="mt-6 flex justify-end gap-3 no-print">
+                                <button id="print-invoice-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 inline-flex items-center"><i data-lucide="printer" class="h-4 w-4 mr-2"></i>Cetak Invoice</button>
+                            </div>
+                        </div>`;
+                    this.elements.printAreaWrapper.querySelector('#print-invoice-btn').addEventListener('click', () => window.print());
+                    lucide.createIcons();
+                }
+            }
+        },
+
+        init() {
+            this.elements = {
+                loginPage: document.getElementById('login-page'), mainApp: document.getElementById('main-app'),
+                pageTitle: document.getElementById('page-title'), sidebarNav: document.getElementById('sidebar-nav'),
+                loginForm: document.getElementById('login-form'), loginError: document.getElementById('login-error'),
+                userDisplay: document.getElementById('user-display'), userAvatar: document.getElementById('user-avatar'),
+                logoutButton: document.getElementById('logout-button'),
+            };
+            lucide.createIcons(); this.setupEventListeners();
+            Object.values(this.pages).forEach(page => page.init?.());
+        },
+
+        setupEventListeners() {
+            this.elements.loginForm.addEventListener('submit', this.handlers.handleLogin);
+            this.elements.logoutButton.addEventListener('click', this.handlers.handleLogout);
+            this.elements.sidebarNav.addEventListener('click', this.handlers.handleNavigation);
+        },
+        
+        handlers: {
+            async handleLogin(e) {
+                e.preventDefault(); const btn = App.elements.loginForm.querySelector('button[type="submit"]');
+                App.ui.setLoading(btn, true); App.elements.loginError.classList.add('hidden');
+                try {
+                    const user = await App.api.checkLogin(App.elements.loginForm.username.value, App.elements.loginForm.password.value);
+                    if (user) {
+                        App.state.user = user; App.elements.userDisplay.textContent = user.username;
+                        App.elements.userAvatar.textContent = user.username.charAt(0).toUpperCase();
+                        App.elements.loginPage.classList.add('hidden');
+                        App.elements.mainApp.classList.remove('hidden'); App.elements.mainApp.classList.add('flex');
+                        App.pages.dashboard.load();
+                    } else { throw new Error("Username atau password salah."); }
+                } catch (err) {
+                    App.elements.loginError.textContent = err.message; App.elements.loginError.classList.remove('hidden');
+                } finally { App.ui.setLoading(btn, false); }
+            },
+            handleLogout() { location.reload(); },
+            handleNavigation(e) {
+                const link = e.target.closest('[data-page]');
+                const collapsible = e.target.closest('.collapsible > a');
+                if (collapsible && !link) {
+                    e.preventDefault(); collapsible.nextElementSibling?.classList.toggle('hidden');
+                    collapsible.querySelector('i[data-lucide="chevron-down"]')?.classList.toggle('rotate-180');
+                    return;
+                }
+                if (!link) return;
+                e.preventDefault(); const pageId = link.dataset.page; const pageKey = pageId.replace(/-/g, '_');
+                if (App.pages[pageKey]?.load) App.pages[pageKey].load();
+                else App.ui.showPage(pageId);
+            }
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => App.init());
+    </script>
+</body>
+</html>
+
