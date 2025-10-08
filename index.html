@@ -204,7 +204,7 @@
                         </div>
                     </div>
 
-                    <div class="bg-white p-6 rounded-lg shadow flex-1 overflow-y-auto">
+                    <div class="bg-white p-6 rounded-lg shadow flex-initial">
                         <h4 class="text-xl font-semibold text-gray-800 mb-4">Status Produksi Detail</h4>
                         <div id="dash-status-details" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             <div class="bg-gray-50 p-3 rounded-lg"><p class="text-sm text-gray-600">Di Produksi</p><p id="dash-di-produksi" class="text-xl font-bold">0</p></div>
@@ -212,7 +212,27 @@
                             <div class="bg-gray-50 p-3 rounded-lg"><p class="text-sm text-gray-600">Siap Kirim</p><p id="dash-siap-kirim-detail" class="text-xl font-bold">0</p></div>
                             <div class="bg-gray-50 p-3 rounded-lg"><p class="text-sm text-gray-600">Di Kirim</p><p id="dash-di-kirim" class="text-xl font-bold">0</p></div>
                         </div>
-                        <p id="dash-loading-text" class="text-center text-gray-500 mt-8">Memuat data...</p>
+                        <p id="dash-loading-text" class="text-center text-gray-500 mt-8 hidden">Memuat data...</p>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow mt-6 flex-1 overflow-y-auto">
+                        <h4 class="text-xl font-semibold text-gray-800 mb-4">List Order Siap Kirim (Bulan Ini)</h4>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">TGL</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">NO INV</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CUSTOMER</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">DESKRIPSI</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">QTY</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ready-ship-list-body" class="bg-white divide-y divide-gray-200">
+                                    </tbody>
+                            </table>
+                        </div>
+                        <p id="ready-ship-loading-text" class="text-center text-gray-500 mt-8 hidden">Memuat list order...</p>
                     </div>
                 </div>
                 <div id="manufaktur-wo-content" class="page hidden h-full flex flex-col"></div>
@@ -372,6 +392,7 @@
                     google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[fn](...args);
                 });
             },
+            // ... (Fungsi API lainnya)
             checkLogin(u, p) { return this.run('checkLogin', u, p); },
             getWorkOrders(m, y) { return this.run('getWorkOrders', m, y); },
             addWorkOrder(d) { return this.run('addWorkOrder', d); },
@@ -399,12 +420,13 @@
     getActiveKaryawanList() { return this.run('getActiveKaryawanList'); },
     processPayroll(d) { return this.run('processPayroll', d); },
     getSlipGajiHtml() { return this.run('getSlipGajiHtml'); }, // API call for slip gaji template
-    // MODIFIKASI: START NEW DASHBOARD API
-    getDashboardData(m, y) { return this.run('getDashboardData', m, y); } 
-    // MODIFIKASI: END NEW DASHBOARD API
+    getDashboardData(m, y) { return this.run('getDashboardData', m, y); }, 
+    // NEW API CALL
+    getReadyToShipOrders(m, y) { return this.run('getReadyToShipOrders', m, y); }
         },
 
         ui: {
+            // ... (Fungsi UI lainnya)
             showPage(pageId) {
                 document.querySelectorAll('.page').forEach(p => p.classList.toggle('hidden', p.id !== `${pageId}-content`));
                 const link = App.elements.sidebarNav.querySelector(`[data-page="${pageId}"]`);
@@ -487,7 +509,10 @@
                         diWarnaDetail: content.querySelector('#dash-di-warna-detail'),
                         siapKirimDetail: content.querySelector('#dash-siap-kirim-detail'),
                         diKirim: content.querySelector('#dash-di-kirim'),
-                        loadingText: content.querySelector('#dash-loading-text')
+                        loadingText: content.querySelector('#dash-loading-text'),
+                        // NEW ELEMENTS for Ready Ship List
+                        readyShipListBody: content.querySelector('#ready-ship-list-body'),
+                        readyShipLoadingText: content.querySelector('#ready-ship-loading-text')
                     };
 
                     // Pastikan elemen filter ditemukan sebelum memanggil populateDateFilters
@@ -503,12 +528,14 @@
                     
                     // Pastikan elemen sudah terinisialisasi sebelum digunakan
                     if (!this.elements.loadingText) {
-                         // Jika elemen tidak ditemukan saat init, tampilkan pesan di konsol
                          console.error("Dashboard elements failed to initialize correctly.");
                          return; 
                     }
 
                     this.elements.loadingText.textContent = 'Memuat data...';
+                    this.elements.readyShipLoadingText.classList.remove('hidden');
+                    this.elements.readyShipListBody.innerHTML = '';
+                    
                     this._updateMetrics(0, { 'Di Produksi': '...', 'Di Warna': '...', 'Siap Kirim': '...', 'Di Kirim': '...', 'Lunas': '...', 'TotalWO': '...' });
 
                     const month = this.elements.monthFilter.value;
@@ -517,14 +544,21 @@
                     try {
                         const data = await App.api.getDashboardData(month, year);
                         this._updateMetrics(data.totalNominal, data.statusCounts);
+                        
+                        // NEW: Load List Order Siap Kirim
+                        const readyOrders = await App.api.getReadyToShipOrders(month, year);
+                        this._renderReadyShipList(readyOrders);
+
                         this.elements.loadingText.textContent = '';
                     } catch (e) {
                         this.elements.loadingText.textContent = `Gagal memuat data: ${e.message}`;
                         this._updateMetrics(0, { 'Di Produksi': 'Error', 'Di Warna': 'Error', 'Siap Kirim': 'Error', 'Di Kirim': 'Error', 'Lunas': 'Error', 'TotalWO': 'Error' });
+                        this.elements.readyShipLoadingText.textContent = `Gagal memuat list order: ${e.message}`;
+                        this.elements.readyShipLoadingText.classList.remove('hidden');
                     }
                 },
+                
                 _updateMetrics(nominal, counts) {
-                    // Menggunakan optional chaining (?.) untuk memastikan kode tidak crash jika elemen null
                     if (this.elements.totalNominal) this.elements.totalNominal.textContent = App.ui.formatCurrency(nominal);
                     if (this.elements.totalWO) this.elements.totalWO.textContent = counts.TotalWO ?? '0';
                     if (this.elements.diWarna) this.elements.diWarna.textContent = counts['Di Warna'] ?? '0';
@@ -536,6 +570,27 @@
                     if (this.elements.diWarnaDetail) this.elements.diWarnaDetail.textContent = counts['Di Warna'] ?? '0';
                     if (this.elements.siapKirimDetail) this.elements.siapKirimDetail.textContent = counts['Siap Kirim'] ?? '0';
                     if (this.elements.diKirim) this.elements.diKirim.textContent = counts['Di Kirim'] ?? '0';
+                },
+
+                _renderReadyShipList(orders) {
+                    this.elements.readyShipLoadingText.classList.add('hidden');
+                    
+                    if (orders.length === 0) {
+                        this.elements.readyShipListBody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500">Tidak ada order siap kirim untuk periode ini.</td></tr>`;
+                        return;
+                    }
+
+                    const rowsHtml = orders.map(order => `
+                        <tr class="hover:bg-gray-50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${order.Tanggal}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">${order['NO INV']}</td>
+                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-900">${order['Nama Customer']}</td>
+                            <td class="px-6 py-4 whitespace-normal text-sm text-gray-700">${order.Deskripsi}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${order.Qty}</td>
+                        </tr>
+                    `).join('');
+
+                    this.elements.readyShipListBody.innerHTML = rowsHtml;
                 }
             },
             // AKHIR MODIFIKASI DASHBOARD
@@ -624,6 +679,11 @@
                         </td>`;
                     this.state.headers.forEach(header => {
                         let content;
+                        
+                        // LOGIKA BARU: Izinkan text wrap untuk Customer dan Deskripsi
+                        const isWrapped = (header === 'Nama Customer' || header === 'Deskripsi');
+                        const wrapClass = isWrapped ? 'whitespace-normal' : 'whitespace-nowrap';
+                        
                         if (header === 'Total Harga') {
                             const ukuran = parseFloat(item['Ukuran']) || 0;
                             const qty = parseFloat(item['Qty']) || 0;
@@ -636,14 +696,15 @@
                         } else {
                             content = item[header] || '';
                         }
-                        cellsHtml += `<td class="px-6 py-4 whitespace-nowrap text-sm ${header === 'PO Status' ? 'text-center' : ''} ${isPrinted ? 'text-gray-500' : 'text-gray-700'}">${content}</td>`;
+                        // Terapkan wrapClass
+                        cellsHtml += `<td class="px-6 py-4 text-sm ${wrapClass} ${header === 'PO Status' ? 'text-center' : ''} ${isPrinted ? 'text-gray-500' : 'text-gray-700'}">${content}</td>`;
                     });
                     return cellsHtml;
                 },
                 render() {
                     this.elements.tableHead.innerHTML = `<tr>
                         <th class="p-4 sticky top-0 bg-gray-800 z-10"><input type="checkbox" id="select-all-wo" class="select-all"></th>
-                        <th class="px-2 py-3 text-left text-xs font-medium text-white uppercase w-24 sticky top-0 bg-gray-800 z-10">Aksi</th>
+                        <th class="px-2 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Aksi</th>
                         ${this.state.headers.map(h => `<th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">${h}</th>`).join('')}
                     </tr>`;
                     if (this.state.data.length === 0) {
