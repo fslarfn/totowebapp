@@ -697,3 +697,178 @@ function addNewKaryawan(karyawanData) {
 function getSlipGajiHtml() {
   return HtmlService.createHtmlOutputFromFile('slipgaji').getContent();
 }
+
+
+function changeUsername(oldUsername, newUsername) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000); // Tunggu hingga 30 detik jika ada proses lain
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Pengguna');
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+    
+    // 1. Cek apakah username baru sudah ada
+    for (const row of data) {
+      if (row[0] === newUsername) {
+        throw new Error('Username baru sudah digunakan oleh pengguna lain.');
+      }
+    }
+    
+    // 2. Cari baris pengguna lama dan update
+    for (const [index, row] of data.entries()) {
+      if (row[0] === oldUsername) {
+        sheet.getRange(index + 2, 1).setValue(newUsername);
+        SpreadsheetApp.flush();
+        return { status: 'success' };
+      }
+    }
+    throw new Error('Username lama tidak ditemukan.');
+  } catch(e) {
+    return { status: 'error', message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/**
+ * Mengubah password pengguna.
+ */
+function changePassword(username, oldPassword, newPassword) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000);
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName('Pengguna');
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 2).getValues();
+
+    for (const [index, row] of data.entries()) {
+      if (row[0] === username) {
+        // Verifikasi password lama
+        if (row[1] === oldPassword) {
+          // Update ke password baru
+          sheet.getRange(index + 2, 2).setValue(newPassword);
+          SpreadsheetApp.flush();
+          return { status: 'success' };
+        } else {
+          throw new Error('Password lama yang Anda masukkan salah.');
+        }
+      }
+    }
+    throw new Error('Pengguna tidak ditemukan.');
+  } catch(e) {
+    return { status: 'error', message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function registerUser(username, password) {
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(30000); // Tunggu hingga 30 detik
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName('Pengguna');
+    const data = sheet.getRange(2, 1, sheet.getLastRow() - 1, 1).getValues();
+
+    // 1. Cek apakah username sudah ada
+    for (const row of data) {
+      if (row[0].toLowerCase() === username.toLowerCase()) {
+        throw new Error('Username sudah digunakan. Silakan pilih yang lain.');
+      }
+    }
+    
+    // 2. Jika belum ada, tambahkan pengguna baru dengan role 'user'
+    sheet.appendRow([username, password, 'user']);
+    SpreadsheetApp.flush();
+    
+    return { status: 'success' };
+  } catch(e) {
+    return { status: 'error', message: e.message };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+// =======================================================
+// PENAMBAHAN FUNGSI DASHBOARD
+// =======================================================
+
+/**
+ * Mengambil dan mengagregasi data produksi bulanan dari WorkOrders.
+ */
+function getDashboardData(month, year) {
+  try {
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName('WorkOrders');
+    
+    if (sheet.getLastRow() < 2) {
+      return { totalNominal: 0, statusCounts: { 'Di Produksi': 0, 'Di Warna': 0, 'Siap Kirim': 0, 'Di Kirim': 0, 'Lunas': 0, 'TotalWO': 0 } };
+    }
+
+    const dataRange = sheet.getDataRange();
+    const allValues = dataRange.getValues();
+    const headers = allValues.shift();
+    
+    // Temukan indeks kolom yang relevan
+    const indices = {
+      Ukuran: headers.indexOf('Ukuran'),
+      Qty: headers.indexOf('Qty'),
+      Harga: headers.indexOf('Harga'),
+      DiProduksi: headers.indexOf('Di Produksi'),
+      DiWarna: headers.indexOf('Di Warna'),
+      SiapKirim: headers.indexOf('Siap Kirim'),
+      DiKirim: headers.indexOf('Di Kirim'),
+      Pembayaran: headers.indexOf('Pembayaran'),
+      Bulan: headers.indexOf('Bulan'),
+      Tahun: headers.indexOf('Tahun')
+    };
+
+    if (Object.values(indices).some(i => i === -1)) {
+      throw new Error('Kolom WorkOrders tidak lengkap untuk dashboard.');
+    }
+
+    const filterMonth = parseInt(month, 10);
+    const filterYear = parseInt(year, 10);
+    
+    let totalNominal = 0;
+    const statusCounts = {
+      'Di Produksi': 0, 'Di Warna': 0, 'Siap Kirim': 0, 'Di Kirim': 0, 'Lunas': 0, 'TotalWO': 0
+    };
+
+    allValues.forEach(row => {
+      const rowMonth = parseInt(row[indices.Bulan], 10);
+      const rowYear = parseInt(row[indices.Tahun], 10);
+
+      // Filter berdasarkan bulan dan tahun yang dipilih
+      if (rowMonth === filterMonth && rowYear === filterYear) {
+        statusCounts.TotalWO++;
+        
+        const ukuran = parseFloat(row[indices.Ukuran]) || 0;
+        const qty = parseFloat(row[indices.Qty]) || 0;
+        const harga = parseFloat(row[indices.Harga]) || 0;
+        const total = ukuran * qty * harga;
+        totalNominal += total;
+        
+        // Hitung status (memeriksa nilai boolean/string 'TRUE')
+        if (row[indices.DiProduksi] === true || String(row[indices.DiProduksi]).toUpperCase() === 'TRUE') {
+          statusCounts['Di Produksi']++;
+        }
+        if (row[indices.DiWarna] === true || String(row[indices.DiWarna]).toUpperCase() === 'TRUE') {
+          statusCounts['Di Warna']++;
+        }
+        if (row[indices.SiapKirim] === true || String(row[indices.SiapKirim]).toUpperCase() === 'TRUE') {
+          statusCounts['Siap Kirim']++;
+        }
+        if (row[indices.DiKirim] === true || String(row[indices.DiKirim]).toUpperCase() === 'TRUE') {
+          statusCounts['Di Kirim']++;
+        }
+        // 'Lunas' diwakili oleh kolom Pembayaran
+        if (row[indices.Pembayaran] === true || String(row[indices.Pembayaran]).toUpperCase() === 'TRUE') {
+          statusCounts['Lunas']++;
+        }
+      }
+    });
+
+    return { totalNominal, statusCounts };
+  } catch (e) {
+    throw new Error(`Error di getDashboardData: ${e.message}`);
+  }
+}
