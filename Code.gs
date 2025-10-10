@@ -137,15 +137,15 @@ function addWorkOrder(orderData) {
       orderData.Qty || '', // 4
       orderData.Harga || '', // 5
       orderData['NO INV'] || '', // 6
-      false, // Di Produksi (7)
-      false, // Di Warna (8)
-      false, // Siap Kirim (9)
-      false, // Di Kirim (10)
-      false, // Pembayaran (11)
-      '', // Ekspedisi (12)
+      false, // Di Produksi (7) - Boolean
+      false, // Di Warna (8) - Boolean
+      false, // Siap Kirim (9) - Boolean
+      false, // Di Kirim (10) - Boolean
+      false, // Pembayaran (11) - Boolean
+      '', // Ekspedisi (12) - String
       orderData.Bulan || '', // 13
       orderData.Tahun || '', // 14
-      'DRAFT', // PO Status (15) - DIUBAH MENJADI STRING 'DRAFT'
+      'DRAFT', // PO Status (15) - DIUBAH menjadi STRING untuk menghindari Sheet menimpanya ke FALSE
       '', // NoSJWarna (16) - Kolom baru untuk penyelarasan
     ];
     
@@ -167,6 +167,7 @@ function updateWorkOrder(rowNumber, orderData) {
         const sheet = spreadsheet.getSheetByName('WorkOrders');
         const range = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn());
         const existingValues = range.getValues()[0];
+        // Pastikan array updatedRow memiliki panjang 17 (Kolom A-Q)
         const updatedRow = [
             orderData.Tanggal ? new Date(orderData.Tanggal) : existingValues[0],
             orderData['Nama Customer'] !== undefined ? orderData['Nama Customer'] : existingValues[1],
@@ -178,7 +179,7 @@ function updateWorkOrder(rowNumber, orderData) {
             existingValues[7], existingValues[8], existingValues[9], existingValues[10], existingValues[11], existingValues[12],
             orderData.Bulan !== undefined ? orderData.Bulan : existingValues[13],
             orderData.Tahun !== undefined ? orderData.Tahun : existingValues[14],
-            existingValues[15], // PO Status tidak diubah dari formulir ini
+            existingValues[15], // PO Status 
             existingValues[16] // NoSJWarna
         ];
         range.setValues([updatedRow]);
@@ -858,8 +859,9 @@ function getReadyToShipOrders(month, year) {
         const readyOrders = [];
         
         values.forEach((row, index) => {
-            const rowMonth = parseInt(row[indices.Bulan], 10);
-            const rowYear = parseInt(row[indices.Tahun], 10);
+            // FIX: Menggunakan index variabel yang sudah didefinisikan (monthIndex, yearIndex)
+            const rowMonth = parseInt(row[monthIndex], 10); 
+            const rowYear = parseInt(row[yearIndex], 10);
             
             // Cek Status Siap Kirim
             const isReady = row[siapKirimIndex] === true || String(row[siapKirimIndex]).toUpperCase() === 'TRUE';
@@ -891,5 +893,3 @@ function getReadyToShipOrders(month, year) {
 function getSlipGajiHtml() {
   return HtmlService.createHtmlOutputFromFile('slipgaji').getContent();
 }
-
-
