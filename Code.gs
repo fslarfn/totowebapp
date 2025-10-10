@@ -127,11 +127,26 @@ function addWorkOrder(orderData) {
   try {
     const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
     const sheet = spreadsheet.getSheetByName('WorkOrders');
+    
+    // PERBAIKAN: Menambahkan kolom 'DRAFT' dan memastikan semua 17 kolom terisi.
     const newRow = [
-      orderData.Tanggal ? new Date(orderData.Tanggal) : null, orderData['Nama Customer'] || '',
-      orderData.Deskripsi || '', orderData.Ukuran || '', orderData.Qty || '', orderData.Harga || '',
-      orderData['NO INV'] || '', false, false, false, false, false, '',
-      orderData.Bulan || '', orderData.Tahun || '', ''
+      orderData.Tanggal ? new Date(orderData.Tanggal) : null, // 0
+      orderData['Nama Customer'] || '', // 1
+      orderData.Deskripsi || '', // 2
+      orderData.Ukuran || '', // 3
+      orderData.Qty || '', // 4
+      orderData.Harga || '', // 5
+      orderData['NO INV'] || '', // 6
+      false, // Di Produksi (7)
+      false, // Di Warna (8)
+      false, // Siap Kirim (9)
+      false, // Di Kirim (10)
+      false, // Pembayaran (11)
+      '', // Ekspedisi (12)
+      orderData.Bulan || '', // 13
+      orderData.Tahun || '', // 14
+      'DRAFT', // PO Status (15) - DIUBAH MENJADI STRING 'DRAFT'
+      '', // NoSJWarna (16) - Kolom baru untuk penyelarasan
     ];
     
     sheet.appendRow(newRow);
@@ -163,7 +178,8 @@ function updateWorkOrder(rowNumber, orderData) {
             existingValues[7], existingValues[8], existingValues[9], existingValues[10], existingValues[11], existingValues[12],
             orderData.Bulan !== undefined ? orderData.Bulan : existingValues[13],
             orderData.Tahun !== undefined ? orderData.Tahun : existingValues[14],
-            existingValues[15]
+            existingValues[15], // PO Status tidak diubah dari formulir ini
+            existingValues[16] // NoSJWarna
         ];
         range.setValues([updatedRow]);
         SpreadsheetApp.flush();
@@ -484,8 +500,11 @@ function getItemsForColoring() {
 
     const results = [];
     values.forEach((row, index) => {
-      const isPrinted = row[poStatusIndex] === 'PRINTED';
-      const isColored = row[diWarnaIndex] === true;
+      // Perbaikan kriteria: Cek apakah status adalah 'PRINTED' ATAU 'READY'
+      const statusValue = String(row[poStatusIndex]).toUpperCase();
+      const isPrinted = statusValue === 'PRINTED' || statusValue === 'READY';
+      
+      const isColored = row[diWarnaIndex] === true || String(row[diWarnaIndex]).toUpperCase() === 'TRUE';
 
       if (isPrinted && !isColored) {
         // index + 2 karena header
@@ -839,8 +858,8 @@ function getReadyToShipOrders(month, year) {
         const readyOrders = [];
         
         values.forEach((row, index) => {
-            const rowMonth = parseInt(row[monthIndex], 10);
-            const rowYear = parseInt(row[yearIndex], 10);
+            const rowMonth = parseInt(row[indices.Bulan], 10);
+            const rowYear = parseInt(row[indices.Tahun], 10);
             
             // Cek Status Siap Kirim
             const isReady = row[siapKirimIndex] === true || String(row[siapKirimIndex]).toUpperCase() === 'TRUE';
@@ -872,3 +891,5 @@ function getReadyToShipOrders(month, year) {
 function getSlipGajiHtml() {
   return HtmlService.createHtmlOutputFromFile('slipgaji').getContent();
 }
+
+
