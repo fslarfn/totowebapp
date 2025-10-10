@@ -870,8 +870,8 @@ function getReadyToShipOrders(month, year) {
             const isShipped = row[diKirimIndex] === true || String(row[diKirimIndex]).toUpperCase() === 'TRUE';
 
 
-            // LOGIKA FILTER BARU: Harus Siap Kirim DAN BELUM Di Kirim
-            if (rowMonth === filterMonth && rowYear === filterYear && isReady && !isShipped) {
+            // LOGIKA FILTER BARU: Hapus pengecekan tanggal untuk menampilkan semua
+            if (isReady && !isShipped) {
                 // index + 2 karena header (baris 1) sudah di-shift
                 readyOrders.push(_rowToObject(row, headers, index + 2)); 
             }
