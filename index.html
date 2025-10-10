@@ -121,7 +121,7 @@
                         <a href="#" data-page="manufaktur-print" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Print PO</a>
                     </div>
                 </div>
-                <div class="collapsible">
+     <div class="collapsible">
                     <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
                         <span class="flex items-center"><i data-lucide="file-text" class="h-5 w-5 mr-3"></i> <span>Administrasi</span></span>
                         <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
@@ -131,26 +131,25 @@
                         <a href="#" data-page="admin-invoice" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Invoice</a>
                         <a href="#" data-page="admin-laporan" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Laporan Keuangan</a>
                     </div>
-                    <div class="collapsible">
-    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
-        <span class="flex items-center"><i data-lucide="package" class="h-5 w-5 mr-3"></i> <span>Barang</span></span>
-        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
-    </a>
-    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
-        <a href="#" data-page="barang-stok" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Stok Bahan</a>
-        <a href="#" data-page="barang-suratjalan" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Surat Jalan</a>
-    </div>
-    
-    <div class="collapsible">
-    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
-        <span class="flex items-center"><i data-lucide="users" class="h-5 w-5 mr-3"></i> <span>Karyawan</span></span>
-        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
-    </a>
-    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
-        <a href="#" data-page="karyawan-data" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Data Karyawan</a>
-        <a href="#" data-page="karyawan-payroll" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Payroll / Gaji</a>
-    </div>
-</div>
+                </div> <div class="collapsible">
+                    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+                        <span class="flex items-center"><i data-lucide="package" class="h-5 w-5 mr-3"></i> <span>Barang</span></span>
+                        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+                    </a>
+                    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+                        <a href="#" data-page="barang-stok" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Stok Bahan</a>
+                        <a href="#" data-page="barang-suratjalan" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Surat Jalan</a>
+                    </div>
+                </div> <div class="collapsible">
+                    <a href="#" class="sidebar-item flex items-center justify-between w-full px-4 py-2 rounded-md hover:bg-gray-700">
+                        <span class="flex items-center"><i data-lucide="users" class="h-5 w-5 mr-3"></i> <span>Karyawan</span></span>
+                        <i data-lucide="chevron-down" class="h-5 w-5 transition-transform"></i>
+                    </a>
+                    <div class="submenu hidden mt-1 ml-4 pl-4 border-l-2 border-gray-600">
+                        <a href="#" data-page="karyawan-data" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Data Karyawan</a>
+                        <a href="#" data-page="karyawan-payroll" class="submenu-item block px-4 py-2 rounded-md hover:bg-gray-800">Payroll / Gaji</a>
+                    </div>
+                </div> 
             </nav>
             <div class="px-4 py-4 border-t border-gray-700">
                 <a href="#" id="logout-button" class="flex items-center w-full px-4 py-2 rounded-md hover:bg-gray-700"><i data-lucide="log-out" class="h-5 w-5 mr-3"></i> Logout</a>
@@ -840,6 +839,407 @@
                     sessionStorage.setItem('poData', JSON.stringify(poData)); App.pages.manufaktur_print.load();
                 }
             },
+            
+barang_suratjalan: {
+    state: {
+        invoiceData: null,
+        itemsForColoring: []
+    },
+    elements: {},
+    init() {
+        // Hanya menyiapkan event listeners saat init
+        this._setupEventListeners();
+        lucide.createIcons();
+    },
+
+    _renderStructure() {
+        const content = document.getElementById('barang-suratjalan-content');
+        
+        // Cek defensif: jika elemen sudah terisi, tidak perlu di-render ulang
+        if (content.querySelector('#tab-sj-customer')) return; 
+
+        content.innerHTML = `
+            <div class="p-4 bg-white border-b border-gray-200 no-print">
+                <div class="flex border-b">
+                    <button id="tab-sj-customer" class="px-4 py-2 text-sm font-medium border-b-2 border-blue-600 text-blue-600">Untuk Customer</button>
+                    <button id="tab-sj-warna" class="px-4 py-2 text-sm font-medium text-gray-500 hover:text-gray-700">Untuk Pewarnaan</button>
+                </div>
+            </div>
+
+            <div id="content-sj-customer" class="h-full flex flex-col">
+                <div class="p-4 bg-white no-print">
+                     <h3 class="text-xl font-semibold text-gray-800">Surat Jalan Customer</h3>
+                    <div class="mt-4 p-4 border rounded-md space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+                            <div>
+                                <label for="sj-invoice-search" class="block text-sm font-medium text-gray-700">Cari Nomor Invoice</label>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <input type="number" id="sj-invoice-search" placeholder="Ketik nomor invoice..." class="w-full p-2 border border-gray-300 rounded-md">
+                                    <button id="sj-search-btn" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"><i data-lucide="search"></i></button>
+                                </div>
+                            </div>
+                            <div><button id="sj-print-btn" class="w-full inline-flex items-center justify-center px-6 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700 disabled:bg-gray-400" disabled><i data-lucide="printer" class="mr-2"></i> CETAK SURAT JALAN</button></div>
+                        </div>
+                         <div>
+                            <label for="sj-catatan" class="block text-sm font-medium text-gray-700">Catatan (Opsional)</label>
+                            <input type="text" id="sj-catatan" placeholder="Contoh: Pengiriman via ekspedisi X" class="mt-1 w-full p-2 border border-gray-300 rounded-md">
+                        </div>
+                    </div>
+                </div>
+                <div id="sj-print-preview" class="hidden flex-1 overflow-y-auto min-h-0 p-4 bg-gray-200">
+                    <div id="sj-print-area" class="print-area bg-white p-6 shadow-lg max-w-3xl mx-auto"></div>
+                </div>
+            </div>
+
+            <div id="content-sj-warna" class="hidden h-full flex flex-col">
+                <div class="p-4 bg-white no-print border-b">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-4">Surat Jalan Pewarnaan</h3>
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <label for="sj-warna-vendor" class="block text-sm font-medium text-gray-700">Pilih Vendor Pewarnaan</label>
+                            <select id="sj-warna-vendor" class="mt-1 border-gray-300 rounded-md shadow-sm">
+                                <option>PT. TEGAR LESTARI</option>
+                                <option>PT. INDOKARYA</option>
+                                <option>PT. PERAK COATING</option>
+                                <option>PT. COATINDO</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="sj-warna-refresh" title="Muat Ulang Daftar" class="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700"><i data-lucide="refresh-cw" class="h-4 w-4"></i></button>
+                            <button id="sj-warna-print-btn" class="inline-flex items-center px-4 py-2 bg-green-600 text-white font-bold rounded-md hover:bg-green-700"><i data-lucide="printer" class="mr-2"></i> Buat & Cetak SJ Warna</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto min-h-0">
+                    <table class="min-w-full divide-y divide-gray-200 bg-white">
+                        <thead class="bg-gray-800">
+                            <tr>
+                                <th class="p-4 sticky top-0 bg-gray-800 z-10"><input type="checkbox" id="sj-warna-select-all"></th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Tanggal WO</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Customer</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Deskripsi</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-white uppercase sticky top-0 bg-gray-800 z-10">Qty</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sj-warna-table-body" class="divide-y divide-gray-200"></tbody>
+                    </table>
+                </div>
+                <div id="sj-warna-print-preview" class="hidden absolute inset-0 bg-gray-200 p-4 overflow-y-auto">
+                    <div id="sj-warna-print-area" class="print-area bg-white p-6 shadow-lg max-w-3xl mx-auto"></div>
+                    <div class="mt-6 text-center no-print">
+                        <button id="sj-warna-close-preview" class="px-4 py-2 bg-gray-500 text-white rounded-md">Tutup Preview</button>
+                    </div>
+                </div>
+            </div>`;
+        
+        // PENTING: Pindahkan assignment elemen ke sini agar elemen ditemukan SETELAH HTML dirender
+        const contentEl = document.getElementById('barang-suratjalan-content');
+        this.elements = {
+            content: contentEl,
+            tabCustomer: contentEl.querySelector('#tab-sj-customer'),
+            tabWarna: contentEl.querySelector('#tab-sj-warna'),
+            contentCustomer: contentEl.querySelector('#content-sj-customer'),
+            contentWarna: contentEl.querySelector('#content-sj-warna'),
+            invoiceInput: contentEl.querySelector('#sj-invoice-search'),
+            searchBtn: contentEl.querySelector('#sj-search-btn'),
+            catatanInput: contentEl.querySelector('#sj-catatan'),
+            printPreview: contentEl.querySelector('#sj-print-preview'),
+            printArea: contentEl.querySelector('#sj-print-area'),
+            printBtn: contentEl.querySelector('#sj-print-btn'),
+            vendorSelect: contentEl.querySelector('#sj-warna-vendor'),
+            warnaRefreshBtn: contentEl.querySelector('#sj-warna-refresh'),
+            warnaPrintBtn: contentEl.querySelector('#sj-warna-print-btn'),
+            warnaTableBody: contentEl.querySelector('#sj-warna-table-body'),
+            warnaSelectAll: contentEl.querySelector('#sj-warna-select-all'),
+            warnaPrintPreview: contentEl.querySelector('#sj-warna-print-preview'),
+            warnaPrintArea: contentEl.querySelector('#sj-warna-print-area'),
+            warnaClosePreviewBtn: contentEl.querySelector('#sj-warna-close-preview'),
+        };
+    },
+
+    _setupEventListeners() {
+        const content = document.getElementById('barang-suratjalan-content');
+        if (content.dataset.listenersAttached) return;
+
+        // Pasang event listeners secara delegasi
+        content.addEventListener('click', (e) => {
+            const self = App.pages.barang_suratjalan; // Gunakan referensi ke objek ini
+            
+            // MODIFIKASI: Gunakan e.target.closest('#ID') untuk menangani klik yang lebih aman
+            const tabCustomerBtn = e.target.closest('#tab-sj-customer');
+            const tabWarnaBtn = e.target.closest('#tab-sj-warna');
+            const searchBtn = e.target.closest('#sj-search-btn'); 
+            const printBtn = e.target.closest('#sj-print-btn');
+            const warnaRefreshBtn = e.target.closest('#sj-warna-refresh');
+            const warnaPrintBtn = e.target.closest('#sj-warna-print-btn');
+            const warnaCloseBtn = e.target.closest('#sj-warna-close-preview');
+
+
+            if (tabCustomerBtn) self._switchTab('customer');
+            if (tabWarnaBtn) self._switchTab('warna');
+            if (searchBtn) self._handleSearchInvoice(); 
+            if (printBtn) self._handlePrintCustomer();
+            if (warnaRefreshBtn) self._loadItemsForColoring();
+            if (warnaPrintBtn) self._handleCreateSJWarna();
+            if (warnaCloseBtn) {
+                 self.elements.warnaPrintPreview.classList.add('hidden');
+                 self._loadItemsForColoring();
+            }
+        });
+
+        content.addEventListener('change', (e) => {
+            const target = e.target;
+            const self = App.pages.barang_suratjalan;
+            
+            if (target.id === 'sj-warna-select-all') {
+                self.elements.warnaTableBody.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = target.checked);
+            }
+        });
+        
+        content.dataset.listenersAttached = true;
+    },
+    
+    load() {
+        this._renderStructure(); // RENDER STRUKTUR DULU
+        App.ui.showPage('barang-suratjalan');
+        this._switchTab('customer'); 
+        this.elements.printPreview.classList.add('hidden');
+        this.elements.printBtn.disabled = true;
+        this.elements.invoiceInput.value = '';
+        this.elements.catatanInput.value = '';
+    },
+
+    _switchTab(tabName) {
+        const isCustomer = tabName === 'customer';
+        this.elements.contentCustomer.classList.toggle('hidden', !isCustomer);
+        this.elements.contentWarna.classList.toggle('hidden', isCustomer);
+        this.elements.tabCustomer.classList.toggle('border-blue-600', isCustomer);
+        this.elements.tabCustomer.classList.toggle('text-blue-600', isCustomer);
+        this.elements.tabCustomer.classList.toggle('text-gray-500', !isCustomer);
+        this.elements.tabWarna.classList.toggle('border-blue-600', !isCustomer);
+        this.elements.tabWarna.classList.toggle('text-blue-600', !isCustomer);
+        this.elements.tabWarna.classList.toggle('text-gray-500', isCustomer);
+
+        if (!isCustomer) {
+            this._loadItemsForColoring();
+        }
+    },
+
+    // --- FUNGSI-FUNGSI UNTUK SJ PEWARNAAN ---
+    async _loadItemsForColoring() {
+        this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6">Memuat barang siap warna...</td></tr>`;
+        try {
+            const data = await App.api.getItemsForColoring();
+            this.state.itemsForColoring = data;
+            if (data.length === 0) {
+                this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6">Tidak ada barang yang siap untuk diwarnai.</td></tr>`;
+                return;
+            }
+            this.elements.warnaTableBody.innerHTML = data.map(item => `
+                <tr class="hover:bg-gray-50">
+                    <td class="p-4"><input type="checkbox" class="sj-warna-item" value="${item.rowNumber}" data-item='${JSON.stringify(item)}'></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Tanggal}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">${item['Nama Customer']}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${item.Deskripsi}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${item.Qty}</td>
+                </tr>
+            `).join('');
+        } catch (e) {
+            this.elements.warnaTableBody.innerHTML = `<tr><td colspan="5" class="text-center p-6 text-red-500">Gagal memuat data: ${e.message}</td></tr>`;
+        }
+    },
+
+    async _handleCreateSJWarna() {
+        const selectedCheckboxes = this.elements.warnaTableBody.querySelectorAll('.sj-warna-item:checked');
+        if (selectedCheckboxes.length === 0) {
+            alert('Pilih minimal satu barang untuk dibuatkan Surat Jalan.'); return;
+        }
+        
+        const vendor = this.elements.vendorSelect.value;
+        const sjData = { vendor, itemRowNumbers: [], items: [] };
+
+        selectedCheckboxes.forEach(cb => {
+            sjData.itemRowNumbers.push(parseInt(cb.value));
+            sjData.items.push(JSON.parse(cb.dataset.item));
+        });
+
+        App.ui.setLoading(this.elements.warnaPrintBtn, true);
+        try {
+            const result = await App.api.createSuratJalanWarna(sjData);
+            if (result.status === 'success') {
+                this._renderSJWarna(result.noSuratJalan, vendor, result.items);
+                this.elements.warnaPrintPreview.classList.remove('hidden');
+                setTimeout(() => window.print(), 100);
+            } else { throw new Error(result.message); }
+        } catch (e) {
+            alert(`Gagal membuat SJ Warna: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.warnaPrintBtn, false);
+        }
+    },
+
+    _renderSJWarna(noSuratJalan, vendor, items) {
+        const tanggal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: 'long', year: 'numeric'});
+        
+        // Di sini kita memproses setiap item untuk mengurangi ukurannya
+        const itemRows = items.map(item => {
+            // Ambil ukuran asli dan ubah menjadi angka
+            const originalUkuran = parseFloat(item.Ukuran) || 0;
+            // Kurangi 0.2
+            const ukuranBaru = originalUkuran - 0.2;
+
+            return `
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="text-align: center; padding: 6px 4px; vertical-align: top;">${item.Qty}</td>
+                    <td style="padding: 6px 4px; vertical-align: top;">${item.Deskripsi}</td>
+                    <td style="text-align: center; padding: 6px 4px; vertical-align: top;">
+                        ${ukuranBaru.toLocaleString('id-ID', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        // Layout baru yang lebih rapi
+        this.elements.warnaPrintArea.innerHTML = `
+            <div style="text-align: center;">
+                <h1 style="font-weight: bold; font-size: 14pt; margin: 0; padding: 0;">SURAT JALAN PEWARNAAN</h1>
+                <p style="margin: 0; padding: 0; font-size: 9pt;">CV. TOTO ALUMINIUM MANUFACTURE</p>
+            </div>
+            <hr style="border: none; border-top: 1px solid black; margin: 12px 0;">
+            
+            <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 2px; width: 18%; vertical-align: top;">Kepada Yth.</td>
+                        <td style="padding: 2px; width: 47%;">: <b>${vendor}</b></td>
+                        <td style="padding: 2px; width: 15%;">No. SJ</td>
+                        <td style="padding: 2px;">: <b>${noSuratJalan}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 2px;">Tanggal</td>
+                        <td style="padding: 2px;">: ${tanggal}</td>
+                        <td></td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <p style="font-size: 10pt; margin-top: 16px; margin-bottom: 8px;">Dengan hormat,<br>Berikut kami kirimkan barang untuk proses pewarnaan:</p>
+            
+            <table style="width: 100%; font-size: 10pt;">
+                <thead>
+                    <tr style="border-top: 1px solid black; border-bottom: 1px solid black;">
+                        <th style="width: 10%; text-align: center; padding: 5px 4px;">Qty</th>
+                        <th style="width: 65%; text-align: left; padding: 5px 4px;">Nama Barang</th>
+                        <th style="width: 25%; text-align: center; padding: 5px 4px;">Ukuran (Cut)</th>
+                    </tr>
+                </thead>
+                <tbody>${itemRows}</tbody>
+            </table>
+            
+            <br><br><br>
+            
+            <table style="width: 100%; text-align: center; font-size: 10pt;">
+                <tbody>
+                    <tr>
+                        <td style="width: 50%;">Penerima,</td>
+                        <td style="width: 50%;">Hormat Kami,</td>
+                    </tr>
+                    <tr><td style="height: 70px;"></td><td></td></tr>
+                    <tr>
+                        <td>(..................)</td>
+                        <td>(..................)</td>
+                    </tr>
+                </tbody>
+            </table>`;
+    },
+
+    // --- FUNGSI-FUNGSI UNTUK SJ CUSTOMER ---
+    async _handleSearchInvoice() {
+        const invoiceNumber = this.elements.invoiceInput.value;
+        if (!invoiceNumber) { alert('Silakan masukkan nomor invoice.'); return; }
+        App.ui.setLoading(this.elements.searchBtn, true);
+        this.elements.printPreview.classList.add('hidden');
+        this.elements.printBtn.disabled = true;
+        try {
+            const data = await App.api.getInvoiceData(invoiceNumber);
+            if (data && data.length > 0) {
+                this.state.invoiceData = data;
+                this._renderSuratJalan(data, null);
+                this.elements.printPreview.classList.remove('hidden');
+                this.elements.printBtn.disabled = false;
+            } else { alert('Invoice tidak ditemukan.'); }
+        } catch (e) {
+            alert(`Terjadi error: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.searchBtn, false);
+        }
+    },
+    
+    _renderSuratJalan(data, noSuratJalan) {
+        const customerName = data[0]['Nama Customer'];
+        const tanggal = new Date().toLocaleDateString('id-ID', {day: '2-digit', month: '2-digit', year: 'numeric'});
+        const itemRows = data.map(item => `
+            <tr>
+                <td style="text-align: center; padding: 5px 4px;">${item.Qty}</td>
+                <td style="padding: 5px 4px;">${item.Deskripsi}</td>
+                <td style="padding: 5px 4px;">${item.Ukuran}</td>
+            </tr>`).join('');
+        this.elements.printArea.innerHTML = `
+            <div style="text-align: center;">
+                <h1 style="font-weight: bold; font-size: 14pt; margin: 0; padding: 0;">SURAT JALAN</h1>
+                <p style="margin: 0; padding: 0; font-size: 9pt;">CV. TOTO ALUMINIUM MANUFACTURE</p>
+            </div>
+            <hr style="border: none; border-top: 1px solid black; margin: 8px 0;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                <tbody>
+                    <tr>
+                        <td style="padding: 1px; width: 20%;">Kepada Yth.</td><td style="padding: 1px; width: 45%;">: ${customerName}</td>
+                        <td style="padding: 1px; width: 15%;">No. SJ</td><td style="padding: 1px;">: <b id="sj-number-placeholder">${noSuratJalan || '...'}</b></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 1px;">No. Invoice</td><td style="padding: 1px;">: ${data[0]['NO INV']}</td>
+                        <td style="padding: 1px;">Tanggal</td><td style="padding: 1px;">: ${tanggal}</td>
+                    </tr>
+                </tbody>
+            </table><br>
+            <table style="width: 100%; font-size: 10pt;">
+                <thead><tr style="border-top: 1px solid black; border-bottom: 1px solid black;"><th style="width: 10%; text-align: center; padding: 5px 4px;">Qty</th><th style="width: 60%; text-align: left; padding: 5px 4px;">Nama Barang</th><th style="width: 30%; text-align: left; padding: 5px 4px;">Ukuran</th></tr></thead>
+                <tbody>${itemRows}</tbody>
+            </table><br><br><br>
+            <table style="width: 100%; text-align: center; font-size: 10pt;">
+                <tbody>
+                    <tr><td style="width: 50%;">Penerima,</td><td style="width: 50%;">Hormat Kami,</td></tr>
+                    <tr><td style="height: 60px;"></td><td></td></tr>
+                    <tr><td>(..................)</td><td>(..................)</td></tr>
+                </tbody>
+            </table>`;
+    },
+
+    async _handlePrintCustomer() {
+        if (!this.state.invoiceData) { alert('Data invoice tidak ada.'); return; }
+        const sjData = {
+            noInvoice: this.elements.invoiceInput.value,
+            namaCustomer: this.state.invoiceData[0]['Nama Customer'],
+            items: this.state.invoiceData.map(i => ({deskripsi: i.Deskripsi, qty: i.Qty, ukuran: i.Ukuran})),
+            namaPenerima: this.state.invoiceData[0]['Nama Customer'], 
+            alamatKirim: '', 
+            catatan: this.elements.catatanInput.value
+        };
+
+        App.ui.setLoading(this.elements.printBtn, true);
+        try {
+            const result = await App.api.logSuratJalan(sjData);
+            if (result.status === 'success') {
+                this._renderSuratJalan(this.state.invoiceData, result.noSuratJalan);
+                setTimeout(() => window.print(), 100);
+            } else { throw new Error(result.message); }
+        } catch(e) {
+            alert(`Gagal mencetak: ${e.message}`);
+        } finally {
+            App.ui.setLoading(this.elements.printBtn, false);
+        }
+    }
+},
             
             manufaktur_print: {
                 elements: {},
